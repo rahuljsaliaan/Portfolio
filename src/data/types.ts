@@ -19,6 +19,7 @@ export interface NavItem {
 export interface SectionMeta {
   eyebrow: string
   title: string
+  accent: Accent
 }
 
 /**
@@ -94,7 +95,7 @@ export interface TimelineEntry {
 
 /* -------------------------------- Projects --------------------------------- */
 
-export type Accent = 'cyan' | 'teal' | 'violet'
+export type Accent = 'cyan' | 'teal' | 'violet' | 'seafoam' | 'nebula'
 
 export interface ImpactStat {
   value: string

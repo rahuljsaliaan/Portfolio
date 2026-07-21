@@ -47,9 +47,12 @@ letter-spacing (`tracking-[0.3em]`); comfortable 16–18 px body.
 
 ## Surfaces & neon
 
-- **Cards** ("materialistic"): `bg-ocean-deep/70`, 1px low-opacity neon border, subtle backdrop blur,
-  rounded corners. Interactive cards intensify the border + add a glow shadow on hover. Shared via
-  `cardClasses(accent, interactive)` in `src/components/ui/cardClasses.ts`.
+- **Cards** ("liquid glass"): a translucent, accent-tinted gradient over a `backdrop-blur`, lit at
+  the top edge and darker toward the bottom — so the ocean shows through and the panel reads as
+  *submerged* (depth), not a flat box. Interactive cards lift + glow in their accent on hover. Shared
+  via `cardClasses(accent, interactive)` in `src/components/ui/cardClasses.ts`. Accents come in five
+  oceanic hues (`cyan`/`teal`/`violet`/`seafoam`/`nebula`); each section picks one (`sectionMeta`) and
+  threads it through its header + cards for colour variety without leaving the palette.
 - **Glow** = layered `box-shadow` / `drop-shadow` / `text-shadow` in the accent at low opacity,
   intensifying on hover/focus. Reusable utilities: `text-glow-cyan`, `neon-ring`, `animate-cta-pulse`
   (all in `index.css`).

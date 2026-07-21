@@ -4,9 +4,9 @@ import { Section } from '@/components/layout/Section'
 import { cardClasses } from '@/components/ui/cardClasses'
 import { Stagger, StaggerItem } from '@/components/ui/Reveal'
 import { Tag } from '@/components/ui/Tag'
-import { GithubIcon } from '@/components/icons/BrandIcons'
 import { ProjectModal } from './ProjectModal'
-import { openSource, projects } from '@/data/projects'
+import { OpenSource } from './OpenSource'
+import { projects } from '@/data/projects'
 import type { Project } from '@/data/types'
 import { cn } from '@/lib/utils'
 
@@ -47,17 +47,7 @@ export function Projects() {
         ))}
       </Stagger>
 
-      <div className="mt-10 text-center">
-        <a
-          href={openSource.href}
-          target="_blank"
-          rel="noreferrer noopener"
-          className="inline-flex items-center gap-2 font-mono text-sm text-drift-gray transition-colors hover:text-current-cyan"
-        >
-          <GithubIcon className="size-4" />
-          {openSource.label} → {openSource.handle}
-        </a>
-      </div>
+      <OpenSource />
 
       <ProjectModal project={open} onClose={() => setOpen(null)} />
     </Section>

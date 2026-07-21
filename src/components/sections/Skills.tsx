@@ -8,7 +8,7 @@ import { skillCategories } from '@/data/skills'
 import type { Accent } from '@/data/types'
 import { cn } from '@/lib/utils'
 
-const ROTATION: Accent[] = ['teal', 'violet', 'cyan']
+const ROTATION: Accent[] = ['teal', 'violet', 'seafoam', 'nebula']
 
 export function Skills() {
   return (

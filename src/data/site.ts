@@ -22,12 +22,12 @@ export const nav: NavItem[] = [
 
 /** Eyebrow + title for each section header. */
 export const sectionMeta: Record<Exclude<SectionId, 'hero'>, SectionMeta> = {
-  about: { eyebrow: 'WHO I AM', title: 'About' },
-  skills: { eyebrow: 'WHAT I WORK WITH', title: 'Skills matrix' },
-  experience: { eyebrow: 'THE PATH SO FAR', title: 'Experience' },
-  projects: { eyebrow: 'SELECTED WORK', title: 'Projects & case studies' },
-  achievements: { eyebrow: 'BY THE NUMBERS', title: 'Achievements & stats' },
-  contact: { eyebrow: 'SAY HELLO', title: 'Get in touch' },
+  about: { eyebrow: 'WHO I AM', title: 'About', accent: 'seafoam' },
+  skills: { eyebrow: 'WHAT I WORK WITH', title: 'Skills matrix', accent: 'cyan' },
+  experience: { eyebrow: 'THE PATH SO FAR', title: 'Experience', accent: 'teal' },
+  projects: { eyebrow: 'SELECTED WORK', title: 'Projects & case studies', accent: 'violet' },
+  achievements: { eyebrow: 'BY THE NUMBERS', title: 'Achievements & stats', accent: 'nebula' },
+  contact: { eyebrow: 'SAY HELLO', title: 'Get in touch', accent: 'seafoam' },
 }
 
 /** All sections top-to-bottom (includes hero) — used by the scroll-spy. */

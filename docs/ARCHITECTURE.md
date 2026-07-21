@@ -16,7 +16,7 @@ src/
 ├── data/            # content + types (the single source of truth)
 ├── lib/             # constants (motion/particle/z tuning) + utils (cn, lerp, damp, scroll)
 ├── providers/       # EnvProvider (reduced-motion/touch/visibility) + MotionConfigProvider
-├── hooks/           # useEnv, useMagnetic, useParallax, useActiveSection, useCountUp, useSceneActive, useWakatime
+├── hooks/           # useEnv, useMagnetic, useParallax, useActiveSection, useCountUp, useSceneActive, useWakatime, useGithubRepos
 ├── components/
 │   ├── layout/      # Navbar, ScrollProgress, Section, Footer, SkipLink
 │   ├── ui/          # Button, Card, Tag, GlowText, Reveal, Modal, SkillBar, RichText
@@ -69,6 +69,10 @@ loads for those users.
 client-side and renders it as liquid "tanks" in `LiveLanguages`. No API key is used (a static site
 can't hold one safely), so it relies on a public share URL; it falls back to a curated language list
 when the URL is empty or the fetch is blocked (e.g. CORS). See docs/CONTENT-GUIDE.md.
+
+`useGithubRepos` fetches public repos from the **CORS-enabled** GitHub API (no key), surfacing those
+with a live demo (`homepage`) first; `OpenSource` renders them as a secondary strip below the case
+studies with Code + Live links. Fails soft to just the profile link.
 
 ## Performance
 

@@ -1,8 +1,9 @@
 import { m } from 'framer-motion'
 import type { ReactNode } from 'react'
-import type { SectionId } from '@/data/types'
+import type { Accent, SectionId } from '@/data/types'
 import { sectionMeta } from '@/data/site'
 import { useEnv } from '@/hooks/useEnv'
+import { ACCENT_TEXT, ACCENT_VAR } from '@/lib/accents'
 import { EASE_OUT_EXPO, MOTION } from '@/lib/constants'
 import { cn } from '@/lib/utils'
 
@@ -13,34 +14,75 @@ interface SectionProps {
   containerClassName?: string
 }
 
-/** Landmark section with a consistent eyebrow + clip-revealed title, read from data. */
+/** Landmark section: a per-accent "current" divider, an accent-tinted header glow,
+ *  and a title that surfaces into focus from the murk. */
 export function Section({ id, children, className, containerClassName }: SectionProps) {
   const meta = sectionMeta[id]
   return (
     <section id={id} className={cn('relative scroll-mt-24 py-24 sm:py-32', className)}>
+      <CurrentDivider accent={meta.accent} />
       <div className={cn('mx-auto w-full max-w-6xl px-6', containerClassName)}>
-        <SectionHeader eyebrow={meta.eyebrow} title={meta.title} />
+        <SectionHeader eyebrow={meta.eyebrow} title={meta.title} accent={meta.accent} />
         {children}
       </div>
     </section>
   )
 }
 
-function SectionHeader({ eyebrow, title }: { eyebrow: string; title: string }) {
+/** A soft, accent-coloured "current" line marking the boundary between sections. */
+function CurrentDivider({ accent }: { accent: Accent }) {
+  return (
+    <div
+      aria-hidden={true}
+      className="pointer-events-none absolute inset-x-0 top-0 flex justify-center"
+    >
+      <div
+        className="h-px w-2/3 max-w-3xl"
+        style={{
+          background: `linear-gradient(90deg, transparent, ${ACCENT_VAR[accent]}, transparent)`,
+          opacity: 0.5,
+          boxShadow: `0 0 12px ${ACCENT_VAR[accent]}`,
+        }}
+      />
+    </div>
+  )
+}
+
+function SectionHeader({
+  eyebrow,
+  title,
+  accent,
+}: {
+  eyebrow: string
+  title: string
+  accent: Accent
+}) {
   const { reducedMotion } = useEnv()
   return (
-    <header className="mb-12 sm:mb-16">
-      <p className="mb-3 font-mono text-xs uppercase tracking-[0.3em] text-current-cyan">
+    <header className="relative mb-12 sm:mb-16">
+      <div
+        aria-hidden={true}
+        className="pointer-events-none absolute -left-4 -top-8 h-28 w-72 rounded-full blur-3xl"
+        style={{ background: ACCENT_VAR[accent], opacity: 0.1 }}
+      />
+      <p
+        className={cn(
+          'relative mb-3 font-mono text-xs uppercase tracking-[0.3em]',
+          ACCENT_TEXT[accent],
+        )}
+      >
         {eyebrow}
       </p>
       {reducedMotion ? (
-        <h2 className="font-display text-4xl font-bold text-foam-white sm:text-5xl">{title}</h2>
+        <h2 className="relative font-display text-4xl font-bold text-foam-white sm:text-5xl">
+          {title}
+        </h2>
       ) : (
-        <div className="overflow-hidden pb-1">
+        <div className="relative overflow-hidden pb-1">
           <m.h2
             className="font-display text-4xl font-bold text-foam-white sm:text-5xl"
-            initial={{ y: '110%' }}
-            whileInView={{ y: '0%' }}
+            initial={{ y: '110%', opacity: 0, filter: 'blur(8px)' }}
+            whileInView={{ y: '0%', opacity: 1, filter: 'blur(0px)' }}
             viewport={{ once: true, amount: 0.6 }}
             transition={{ duration: MOTION.duration.slow, ease: EASE_OUT_EXPO }}
           >

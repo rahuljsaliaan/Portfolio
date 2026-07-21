@@ -34,8 +34,11 @@ that only drives bar length — the values are illustrative, so calibrate or swi
 to the entry below). Delete the placeholder early-role entry if it doesn't apply.
 
 **Projects** → `projects.ts`. Each project has a `caseStudy` (challenge / approach / architecture /
-impact) shown in the modal. `accent` (`cyan|teal|violet`) tints the card. Impact numbers are dummy —
-update them. There are intentionally **no code links** (professional/confidential work).
+impact) shown in the modal. `accent` (`cyan|teal|violet|seafoam|nebula`) tints the card. Impact
+numbers are dummy — update them. There are intentionally **no code links** (professional/confidential
+work). Below the case studies, a secondary strip **auto-loads your public GitHub repos** (with
+live-demo links from each repo's "homepage") via the public API — nothing to configure; it falls back
+to the profile link (`openSource` in `projects.ts`) if the API is unavailable or rate-limited.
 
 **Stats & achievements** → `achievements.ts`. `stats` count up on scroll; set `value` + optional
 `suffix` (e.g. `10` + `'+'`). `real: true` is just a note to you (not rendered differently).

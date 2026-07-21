@@ -6,19 +6,21 @@ import { Tag } from '@/components/ui/Tag'
 import { SceneBoundary } from '@/components/three/SceneBoundary'
 import { SceneFallback } from '@/components/three/SceneFallback'
 import { achievementChips, stats } from '@/data/achievements'
-import type { Stat } from '@/data/types'
+import type { Accent, Stat } from '@/data/types'
 import { useCountUp } from '@/hooks/useCountUp'
 import { useEnv } from '@/hooks/useEnv'
+
+const STAT_ACCENTS: Accent[] = ['cyan', 'seafoam', 'teal', 'violet']
 
 const AchievementScene = lazy(() =>
   import('@/components/three/AchievementScene').then((m) => ({ default: m.AchievementScene })),
 )
 
-function StatCard({ stat }: { stat: Stat }) {
+function StatCard({ stat, accent }: { stat: Stat; accent: Accent }) {
   const { ref, value } = useCountUp<HTMLDivElement>(stat.value)
   const suffix = stat.suffix ?? ''
   return (
-    <Card accent="cyan" interactive className="h-full p-6">
+    <Card accent={accent} interactive className="h-full p-6">
       <div
         ref={ref}
         className="font-mono text-4xl font-bold text-current-cyan text-glow-cyan sm:text-5xl"
@@ -45,9 +47,9 @@ export function Achievements() {
       <div className="grid items-center gap-12 lg:grid-cols-[1fr_auto]">
         <div>
           <Stagger className="grid grid-cols-2 gap-4 sm:gap-5">
-            {stats.map((stat) => (
+            {stats.map((stat, i) => (
               <StaggerItem key={stat.label} className="h-full">
-                <StatCard stat={stat} />
+                <StatCard stat={stat} accent={STAT_ACCENTS[i % STAT_ACCENTS.length]} />
               </StaggerItem>
             ))}
           </Stagger>
