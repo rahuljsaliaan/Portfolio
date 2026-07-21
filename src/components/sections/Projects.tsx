@@ -1,14 +1,13 @@
 import { useState } from 'react'
 import { ArrowUpRight } from 'lucide-react'
 import { Section } from '@/components/layout/Section'
-import { cardClasses } from '@/components/ui/cardClasses'
 import { Stagger, StaggerItem } from '@/components/ui/Reveal'
 import { Tag } from '@/components/ui/Tag'
+import { Card } from '@/components/ui/Card'
 import { ProjectModal } from './ProjectModal'
 import { OpenSource } from './OpenSource'
 import { projects } from '@/data/projects'
 import type { Project } from '@/data/types'
-import { cn } from '@/lib/utils'
 
 export function Projects() {
   const [open, setOpen] = useState<Project | null>(null)
@@ -18,14 +17,13 @@ export function Projects() {
       <Stagger className="grid grid-cols-1 gap-5 md:grid-cols-2">
         {projects.map((project) => (
           <StaggerItem key={project.id} className="h-full">
-            <button
-              type="button"
+            <Card
+              as="button"
+              accent={project.accent}
+              interactive
               onClick={() => setOpen(project)}
               aria-haspopup="dialog"
-              className={cn(
-                cardClasses(project.accent, true),
-                'group flex h-full w-full flex-col items-start p-6 text-left',
-              )}
+              className="flex h-full w-full flex-col items-start p-6 text-left"
             >
               <div className="mb-4 flex w-full items-start justify-between gap-3">
                 <Tag variant="chip">{project.badge}</Tag>
@@ -42,7 +40,7 @@ export function Projects() {
                 ))}
               </div>
               <span className="mt-5 font-mono text-xs text-current-cyan">Read case study →</span>
-            </button>
+            </Card>
           </StaggerItem>
         ))}
       </Stagger>

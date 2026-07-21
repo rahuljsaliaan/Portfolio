@@ -29,21 +29,30 @@ export function Section({ id, children, className, containerClassName }: Section
   )
 }
 
-/** A soft, accent-coloured "current" line marking the boundary between sections. */
+/** A soft, accent-coloured "current" line that draws itself in as the section scrolls into view. */
 function CurrentDivider({ accent }: { accent: Accent }) {
+  const { reducedMotion } = useEnv()
+  const lineStyle = {
+    background: `linear-gradient(90deg, transparent, ${ACCENT_VAR[accent]}, transparent)`,
+    boxShadow: `0 0 12px ${ACCENT_VAR[accent]}`,
+  }
   return (
     <div
       aria-hidden={true}
       className="pointer-events-none absolute inset-x-0 top-0 flex justify-center"
     >
-      <div
-        className="h-px w-2/3 max-w-3xl"
-        style={{
-          background: `linear-gradient(90deg, transparent, ${ACCENT_VAR[accent]}, transparent)`,
-          opacity: 0.5,
-          boxShadow: `0 0 12px ${ACCENT_VAR[accent]}`,
-        }}
-      />
+      {reducedMotion ? (
+        <div className="h-px w-2/3 max-w-3xl opacity-50" style={lineStyle} />
+      ) : (
+        <m.div
+          className="h-px w-2/3 max-w-3xl origin-center"
+          style={lineStyle}
+          initial={{ scaleX: 0, opacity: 0 }}
+          whileInView={{ scaleX: 1, opacity: 0.5 }}
+          viewport={{ once: true, margin: '0px 0px -60px 0px' }}
+          transition={{ duration: 1, ease: EASE_OUT_EXPO }}
+        />
+      )}
     </div>
   )
 }

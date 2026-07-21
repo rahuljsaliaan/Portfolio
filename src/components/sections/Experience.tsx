@@ -1,7 +1,7 @@
 import { m } from 'framer-motion'
 import { ArrowUp } from 'lucide-react'
 import { Section } from '@/components/layout/Section'
-import { cardClasses } from '@/components/ui/cardClasses'
+import { Card } from '@/components/ui/Card'
 import { RichTextView } from '@/components/ui/RichText'
 import { Tag } from '@/components/ui/Tag'
 import { experience } from '@/data/experience'
@@ -12,12 +12,10 @@ import { cn } from '@/lib/utils'
 
 function EntryCard({ entry }: { entry: TimelineEntry }) {
   return (
-    <div
-      className={cn(
-        cardClasses(entry.current ? 'cyan' : 'teal'),
-        'p-6 text-left',
-        entry.current && 'shadow-[0_0_40px_-16px_var(--color-current-cyan)]',
-      )}
+    <Card
+      accent={entry.current ? 'cyan' : 'teal'}
+      interactive
+      className={cn('p-6 text-left', entry.current && 'shadow-[0_0_40px_-16px_var(--color-current-cyan)]')}
     >
       <div className="mb-2 flex flex-wrap items-center gap-3">
         <span className="font-mono text-xs text-current-cyan">{entry.period}</span>
@@ -47,7 +45,7 @@ function EntryCard({ entry }: { entry: TimelineEntry }) {
           </li>
         ))}
       </ul>
-    </div>
+    </Card>
   )
 }
 

@@ -115,6 +115,24 @@
   cursor: none !important;
 }
 
+/* Magic-liquid hover reveal — a glow pool that follows the cursor inside a Card. */
+.liquid-glow {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.45s ease;
+  background: radial-gradient(
+    220px circle at var(--lx, 50%) var(--ly, 50%),
+    color-mix(in srgb, var(--panel-accent, #38f2e5) 22%, transparent),
+    transparent 65%
+  );
+}
+.group:hover > .liquid-glow {
+  opacity: 1;
+}
+
 /* Respect reduced-motion globally — covers CSS-driven motion the JS flags can't reach. */
 @media (prefers-reduced-motion: reduce) {
   html {

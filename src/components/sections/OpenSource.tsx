@@ -1,9 +1,8 @@
 import { ArrowUpRight, ExternalLink, Star } from 'lucide-react'
 import { GithubIcon } from '@/components/icons/BrandIcons'
-import { cardClasses } from '@/components/ui/cardClasses'
+import { Card } from '@/components/ui/Card'
 import { openSource } from '@/data/projects'
 import { useGithubRepos } from '@/hooks/useGithubRepos'
-import { cn } from '@/lib/utils'
 
 /** Secondary strip: live public repos from GitHub, each with Code + Live-demo links. */
 export function OpenSource() {
@@ -36,7 +35,7 @@ export function OpenSource() {
       {status === 'ready' && repos.length > 0 ? (
         <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {repos.map((repo) => (
-            <li key={repo.id} className={cn(cardClasses('teal', true), 'flex flex-col gap-2 p-4')}>
+            <Card as="li" key={repo.id} accent="teal" interactive className="flex flex-col gap-2 p-4">
               <div className="flex items-center justify-between gap-2">
                 <span className="truncate font-mono text-sm text-foam-white">{repo.name}</span>
                 {repo.stars > 0 ? (
@@ -78,7 +77,7 @@ export function OpenSource() {
                   </a>
                 </div>
               </div>
-            </li>
+            </Card>
           ))}
         </ul>
       ) : null}
