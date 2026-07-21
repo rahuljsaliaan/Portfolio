@@ -1,0 +1,155 @@
+@import 'tailwindcss';
+
+/*
+ * Abyssal Neon — design tokens (Material Ocean base + bioluminescent neon).
+ * Tailwind v4 auto-generates utilities from these: a --color-NAME token yields
+ * bg-NAME / text-NAME / border-NAME, and a --font-NAME token yields font-NAME.
+ */
+@theme {
+  /* Palette */
+  --color-ocean-abyss: #0f111a; /* page background */
+  --color-ocean-deep: #1a1f2e; /* elevated surfaces / cards */
+  --color-ocean-mist: #232a3b; /* higher elevation / modal surfaces */
+  --color-current-cyan: #38f2e5; /* primary neon */
+  --color-biolume-teal: #00bfa5; /* secondary accent */
+  --color-jelly-violet: #b388ff; /* tertiary accent */
+  --color-foam-white: #e6f1ff; /* primary text */
+  --color-drift-gray: #8492a6; /* secondary text */
+
+  /* Typography */
+  --font-display: 'Space Grotesk Variable', 'Grotesk Fallback', ui-sans-serif, system-ui, sans-serif;
+  --font-sans: 'Inter Variable', 'Inter Fallback', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono Variable', 'Mono Fallback', ui-monospace, 'SFMono-Regular', monospace;
+
+  /* Motion easings */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+/* Metric-override fallbacks → near-zero layout shift when the web fonts swap in. */
+@font-face {
+  font-family: 'Inter Fallback';
+  src: local('Arial');
+  ascent-override: 90%;
+  descent-override: 22.43%;
+  line-gap-override: 0%;
+  size-adjust: 107.12%;
+}
+@font-face {
+  font-family: 'Grotesk Fallback';
+  src: local('Arial');
+  ascent-override: 92%;
+  descent-override: 24%;
+  line-gap-override: 0%;
+  size-adjust: 104%;
+}
+@font-face {
+  font-family: 'Mono Fallback';
+  src: local('Courier New');
+  ascent-override: 75%;
+  descent-override: 20%;
+  line-gap-override: 0%;
+  size-adjust: 108%;
+}
+
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+    scrollbar-color: var(--color-current-cyan) var(--color-ocean-deep);
+  }
+
+  body {
+    min-height: 100dvh;
+    background-color: var(--color-ocean-abyss);
+    color: var(--color-foam-white);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background-color: color-mix(in srgb, var(--color-current-cyan) 30%, transparent);
+    color: var(--color-foam-white);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-current-cyan);
+    outline-offset: 3px;
+    border-radius: 3px;
+  }
+
+  /* Thin neon scrollbar (WebKit) */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--color-ocean-deep);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: color-mix(in srgb, var(--color-current-cyan) 45%, var(--color-ocean-mist));
+    border-radius: 999px;
+    border: 2px solid var(--color-ocean-deep);
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-current-cyan);
+  }
+}
+
+/* Hide the native cursor while the custom cursor is active. */
+.cursor-none,
+.cursor-none * {
+  cursor: none !important;
+}
+
+/* Respect reduced-motion globally — covers CSS-driven motion the JS flags can't reach. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ---- Neon utilities ---- */
+@utility text-glow-cyan {
+  text-shadow:
+    0 0 12px color-mix(in srgb, var(--color-current-cyan) 55%, transparent),
+    0 0 32px color-mix(in srgb, var(--color-current-cyan) 25%, transparent);
+}
+
+@utility neon-ring {
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--color-current-cyan) 20%, transparent),
+    0 0 24px -6px color-mix(in srgb, var(--color-current-cyan) 45%, transparent);
+}
+
+/* Pulsing glow for the primary CTA (disabled under reduced-motion by the global reset). */
+@keyframes cta-pulse {
+  0%,
+  100% {
+    box-shadow:
+      0 0 22px -8px var(--color-current-cyan),
+      0 0 0 1px color-mix(in srgb, var(--color-current-cyan) 45%, transparent);
+  }
+  50% {
+    box-shadow:
+      0 0 40px -4px var(--color-current-cyan),
+      0 0 0 1px color-mix(in srgb, var(--color-current-cyan) 75%, transparent);
+  }
+}
+
+@utility animate-cta-pulse {
+  animation: cta-pulse 3.2s var(--ease-out-quart) infinite;
+}
