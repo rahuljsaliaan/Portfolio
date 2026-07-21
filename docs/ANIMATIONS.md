@@ -9,7 +9,7 @@ radius, cursor springs, z-index scale). Adjust the "feel" there without touching
 |---|---|---|
 | Hero knowledge graph (drift, spin, cursor-tilt, signals, bubbles) | `three/HeroScene` + `KnowledgeGraph` | Not mounted; hero shows its static gradient |
 | Fresnel icosahedron | `three/AchievementScene` | Not mounted; `SceneFallback` orb shows |
-| Caustic light shimmer | `decor/Atmosphere` | Static (no drift) |
+| Persistent liquid ocean (currents, cursor wake, scroll-descent) | `decor/OceanBackground` + `three/OceanScene` | Not mounted; static gradient shows |
 | Liquid language "tanks" | `sections/LiveLanguages` | Fill shown instantly; surface bob off |
 | Custom cursor (dot + trailing ring) | `cursor/CustomCursor` | Disabled (native cursor); also off on touch |
 | Magnetic hovers | `hooks/useMagnetic` (Button, nav links, socials) | Disabled (no pull) |

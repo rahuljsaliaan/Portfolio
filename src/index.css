@@ -190,3 +190,16 @@
 @utility animate-surface-bob {
   animation: surface-bob 2.6s ease-in-out infinite;
 }
+
+/* Fade the ocean canvas in over the gradient once WebGL is ready. */
+@keyframes ocean-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@utility animate-ocean-in {
+  animation: ocean-in 1.4s ease both;
+}

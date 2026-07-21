@@ -26,11 +26,13 @@ utilities (`bg-*`, `text-*`, `border-*`).
 Opacity modifiers work (`text-current-cyan/60`, `border-current-cyan/15`). The site is dark-only
 (`color-scheme: dark`).
 
-**Atmosphere (deep water meets deep space):** a fixed backmost `Atmosphere` layer renders a
-surface-light → abyss vertical gradient plus a faint drifting caustic shimmer (SVG fractal noise);
-`ParallaxBlobs` adds mid-depth nebula/teal/violet glows. The core motion easing is
-`--ease-liquid` (`EASE_LIQUID` in `lib/constants.ts`) — a gentle buoyant settle. Keep the celestial
-magenta (`nebula`) rare; cyan/teal carry the palette.
+**One continuous ocean (deep water meets deep space):** a single fixed `OceanBackground` sits behind
+every section — a WebGL water shader (`three/OceanScene`) with flowing currents, a cursor wake, and a
+scroll-driven descent, over a surface-light → abyss gradient that also serves as the reduced-motion /
+no-WebGL fallback. Sections are transparent so the same ocean shows through everywhere; the hero adds
+only the knowledge graph on top. The core motion easing is `--ease-liquid` (`EASE_LIQUID` in
+`lib/constants.ts`) — a gentle buoyant settle. Keep the celestial magenta (`nebula`) rare; cyan/teal
+carry the palette.
 
 ## Typography
 

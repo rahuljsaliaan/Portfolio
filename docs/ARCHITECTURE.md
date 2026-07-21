@@ -22,8 +22,8 @@ src/
 │   ├── ui/          # Button, Card, Tag, GlowText, Reveal, Modal, SkillBar, RichText
 │   ├── icons/       # inline SVG brand marks + lookup map
 │   ├── cursor/      # CustomCursor
-│   ├── decor/       # Atmosphere (depth gradient + caustics), ParallaxBlobs
-│   ├── three/       # HeroScene, KnowledgeGraph, AchievementScene, SceneFallback, SceneBoundary
+│   ├── decor/       # OceanBackground (persistent WebGL ocean + gradient fallback)
+│   ├── three/       # OceanScene, HeroScene, KnowledgeGraph, AchievementScene, SceneFallback, SceneBoundary
 │   └── sections/    # Hero, About, Skills (+LiveLanguages), Experience, Projects (+Modal/Detail), Achievements, Contact
 ├── App.tsx          # providers + layout + section order
 ├── main.tsx         # root render + font imports
@@ -41,10 +41,15 @@ src/
 
 ## Three.js
 
-Both scenes are **`React.lazy` + Suspense** and sit behind a **`SceneBoundary`** (a class error
-boundary — `lazy`/Suspense only catch loading, not runtime/WebGL-context failures → falls back to
-`SceneFallback`). They are skipped entirely under reduced-motion, so three.js never even loads for
-those users.
+All scenes are **`React.lazy` + Suspense** and sit behind a **`SceneBoundary`** (a class error
+boundary — `lazy`/Suspense only catch loading, not runtime/WebGL-context failures → falls back to a
+gradient / `SceneFallback`). They are skipped entirely under reduced-motion, so three.js never even
+loads for those users.
+
+- `OceanScene` (persistent background) — a fixed full-viewport fragment shader: domain-warped FBM
+  currents, a cursor wake ("fish in water"), and a scroll-driven descent (the gradient deepens as you
+  scroll). It's the continuous "ocean" behind every section. Rendered at low DPR (`[0.55, 0.9]`) with
+  `PerformanceMonitor`; a static CSS gradient is the reduced-motion / no-WebGL fallback.
 
 - `KnowledgeGraph` (hero) — glowing nodes (a soft additive point shader with a depth fade) + edges
   that follow the nodes' buoyant float, plus bidirectional "signal" packets (the two-currents nod),

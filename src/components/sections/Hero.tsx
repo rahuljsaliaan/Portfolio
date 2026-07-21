@@ -13,22 +13,10 @@ const HeroScene = lazy(() =>
   import('@/components/three/HeroScene').then((m) => ({ default: m.HeroScene })),
 )
 
-/** Decorative deep-sea glow — also the fallback behind the 3D scene (added later). */
-function HeroBackground() {
-  return (
-    <div aria-hidden={true} className="pointer-events-none absolute inset-0" style={{ zIndex: Z.decor }}>
-      <div className="absolute left-1/4 top-1/3 h-[40rem] w-[40rem] -translate-x-1/2 rounded-full bg-current-cyan/10 blur-[120px]" />
-      <div className="absolute right-1/4 top-1/2 h-[32rem] w-[32rem] rounded-full bg-jelly-violet/10 blur-[120px]" />
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-ocean-abyss" />
-    </div>
-  )
-}
-
 export function Hero() {
   const { reducedMotion } = useEnv()
   return (
     <section id="hero" className="relative flex min-h-dvh items-center overflow-hidden">
-      <HeroBackground />
       {!reducedMotion ? (
         <SceneBoundary>
           <Suspense fallback={null}>
