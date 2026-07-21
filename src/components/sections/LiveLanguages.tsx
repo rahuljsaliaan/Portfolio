@@ -1,5 +1,6 @@
 import { m } from 'framer-motion'
 import { Card } from '@/components/ui/Card'
+import { Reveal } from '@/components/ui/Reveal'
 import type { LanguageStat } from '@/data/types'
 import { useEnv } from '@/hooks/useEnv'
 import { useWakatime, type WakatimeStatus } from '@/hooks/useWakatime'
@@ -61,16 +62,18 @@ function StatusBadge({ status }: { status: WakatimeStatus }) {
 export function LiveLanguages() {
   const { languages, status } = useWakatime()
   return (
-    <Card accent="cyan" className="mb-6 p-6 sm:p-8">
-      <div className="mb-6 flex items-center justify-between gap-4">
-        <h3 className="font-display text-lg font-semibold text-foam-white">Recently coding</h3>
-        <StatusBadge status={status} />
-      </div>
-      <div className="flex flex-wrap justify-center gap-4 sm:gap-7">
-        {languages.map((lang, i) => (
-          <LanguageTank key={lang.name} lang={lang} delay={i * 0.08} />
-        ))}
-      </div>
-    </Card>
+    <Reveal className="mb-6">
+      <Card accent="cyan" className="p-6 sm:p-8">
+        <div className="mb-6 flex items-center justify-between gap-4">
+          <h3 className="font-display text-lg font-semibold text-foam-white">Recently coding</h3>
+          <StatusBadge status={status} />
+        </div>
+        <div className="flex flex-wrap justify-center gap-4 sm:gap-7">
+          {languages.map((lang, i) => (
+            <LanguageTank key={lang.name} lang={lang} delay={i * 0.08} />
+          ))}
+        </div>
+      </Card>
+    </Reveal>
   )
 }

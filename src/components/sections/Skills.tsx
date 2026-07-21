@@ -23,14 +23,7 @@ export function Skills() {
               key={cat.id}
               className={cn('h-full', cat.highlight && 'sm:col-span-2')}
             >
-              <Card
-                accent={accent}
-                interactive
-                className={cn(
-                  'h-full p-6',
-                  cat.highlight && 'shadow-[0_0_50px_-20px_var(--color-current-cyan)]',
-                )}
-              >
+              <Card accent={accent} interactive className="h-full p-6">
                 <div className="mb-5 flex items-center gap-3">
                   <span className="grid size-10 shrink-0 place-items-center rounded-xl border border-current-cyan/20 bg-current-cyan/5 text-current-cyan">
                     <Icon className="size-5" aria-hidden={true} />

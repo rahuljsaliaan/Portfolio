@@ -12,11 +12,7 @@ import { cn } from '@/lib/utils'
 
 function EntryCard({ entry }: { entry: TimelineEntry }) {
   return (
-    <Card
-      accent={entry.current ? 'cyan' : 'teal'}
-      interactive
-      className={cn('p-6 text-left', entry.current && 'shadow-[0_0_40px_-16px_var(--color-current-cyan)]')}
-    >
+    <Card accent={entry.current ? 'cyan' : 'teal'} interactive className="p-6 text-left">
       <div className="mb-2 flex flex-wrap items-center gap-3">
         <span className="font-mono text-xs text-current-cyan">{entry.period}</span>
         {entry.current ? <Tag variant="status">Current</Tag> : null}
