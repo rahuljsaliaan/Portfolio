@@ -16,11 +16,15 @@ export function ParallaxBlobs() {
     >
       <m.div
         style={{ y: y1 }}
-        className="absolute -left-32 top-[18%] h-96 w-96 rounded-full bg-jelly-violet/10 blur-[120px]"
+        className="absolute -left-32 top-[16%] h-96 w-96 rounded-full bg-nebula/8 blur-[120px]"
       />
       <m.div
         style={{ y: y2 }}
-        className="absolute -right-24 top-[55%] h-[28rem] w-[28rem] rounded-full bg-biolume-teal/10 blur-[130px]"
+        className="absolute -right-24 top-[52%] h-[28rem] w-[28rem] rounded-full bg-biolume-teal/10 blur-[130px]"
+      />
+      <m.div
+        style={{ y: y1 }}
+        className="absolute left-[45%] top-[80%] h-72 w-72 rounded-full bg-jelly-violet/8 blur-[110px]"
       />
     </div>
   )

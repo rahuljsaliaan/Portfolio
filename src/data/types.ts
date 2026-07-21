@@ -47,6 +47,7 @@ export interface HeroContent {
 }
 
 export interface AboutContent {
+  lead: string
   paragraphs: RichText[]
 }
 
@@ -66,6 +67,13 @@ export interface SkillCategory {
   /** the loudest, most-glowing card */
   highlight?: boolean
   skills: Skill[]
+}
+
+/** A single language's share of coding time (from WakaTime, or the fallback). */
+export interface LanguageStat {
+  name: string
+  percent: number
+  color?: string
 }
 
 /* ------------------------------- Experience -------------------------------- */

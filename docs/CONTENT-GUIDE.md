@@ -17,6 +17,7 @@ never need to touch a component. TypeScript will tell you if a required field is
 | `projects.ts` | `projects`, `openSource` | Case-study cards + modal deep-dives, the GitHub strip |
 | `achievements.ts` | `stats`, `achievementChips` | Count-up stat blocks + achievement chips |
 | `contact.ts` | `contact` | Email, blurb, CTA label, socials, footer line |
+| `wakatime.ts` | `wakatime`, `fallbackLanguages` | WakaTime share URL + fallback language mix |
 | `types.ts` | (types only) | Shapes for all of the above |
 
 ## Common edits
@@ -44,6 +45,20 @@ icon in `src/components/icons/`), and the `footer` line.
 
 **Nav / section titles** → `site.ts` (`nav`, `sectionMeta`). If you add or rename a section, also
 update `sectionOrder` (used by the scroll-spy) and the `SectionId` union in `types.ts`.
+
+## Live languages (WakaTime)
+
+The "Recently coding" tanks in the Skills section pull from WakaTime. To go **live**:
+
+1. In WakaTime, enable **"Display languages publicly"** (profile settings).
+2. Open your **Languages** chart → **Embed** → copy the **JSON** URL
+   (`https://wakatime.com/share/@rahuljsaliaan/<uuid>.json`).
+3. Paste it into `shareUrl` in `src/data/wakatime.ts`.
+
+The badge shows "live · WakaTime" when the fetch succeeds. Until then (or if a browser blocks the
+request via CORS), it shows the curated `fallbackLanguages` with a "sample" badge — edit those
+placeholder percentages to taste. If CORS blocks the live fetch on your deploy, switch to a
+build-time fetch (see docs/ARCHITECTURE.md → Live data).
 
 ## Page metadata (SEO / social)
 

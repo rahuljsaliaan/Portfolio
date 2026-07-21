@@ -7,8 +7,10 @@ radius, cursor springs, z-index scale). Adjust the "feel" there without touching
 
 | Effect | Where | Reduced-motion behavior |
 |---|---|---|
-| Hero particle field + cursor parallax | `three/HeroScene` + `AbyssParticles` | Not mounted; hero shows its static gradient |
+| Hero knowledge graph (drift, spin, cursor-tilt, signals, bubbles) | `three/HeroScene` + `KnowledgeGraph` | Not mounted; hero shows its static gradient |
 | Fresnel icosahedron | `three/AchievementScene` | Not mounted; `SceneFallback` orb shows |
+| Caustic light shimmer | `decor/Atmosphere` | Static (no drift) |
+| Liquid language "tanks" | `sections/LiveLanguages` | Fill shown instantly; surface bob off |
 | Custom cursor (dot + trailing ring) | `cursor/CustomCursor` | Disabled (native cursor); also off on touch |
 | Magnetic hovers | `hooks/useMagnetic` (Button, nav links, socials) | Disabled (no pull) |
 | Section reveals (drift + fade, stagger) | `ui/Reveal` (`Reveal`/`Stagger`/`StaggerItem`) | Renders final state instantly |

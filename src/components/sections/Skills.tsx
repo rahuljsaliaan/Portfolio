@@ -3,6 +3,7 @@ import { Card } from '@/components/ui/Card'
 import { SkillBar } from '@/components/ui/SkillBar'
 import { Stagger, StaggerItem } from '@/components/ui/Reveal'
 import { Tag } from '@/components/ui/Tag'
+import { LiveLanguages } from './LiveLanguages'
 import { skillCategories } from '@/data/skills'
 import type { Accent } from '@/data/types'
 import { cn } from '@/lib/utils'
@@ -12,6 +13,7 @@ const ROTATION: Accent[] = ['teal', 'violet', 'cyan']
 export function Skills() {
   return (
     <Section id="skills">
+      <LiveLanguages />
       <Stagger className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {skillCategories.map((cat, i) => {
           const Icon = cat.icon

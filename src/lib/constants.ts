@@ -4,6 +4,8 @@
 /** framer-motion bezier easings (BezierDefinition tuples). */
 export const EASE_OUT_EXPO: [number, number, number, number] = [0.16, 1, 0.3, 1]
 export const EASE_OUT_QUART: [number, number, number, number] = [0.25, 1, 0.5, 1]
+/** Gentle buoyant settle — the site's "liquid" feel. */
+export const EASE_LIQUID: [number, number, number, number] = [0.34, 1.15, 0.5, 1]
 
 export const MOTION = {
   duration: { fast: 0.3, base: 0.6, slow: 0.9 },
@@ -28,6 +30,13 @@ export const MAGNETIC = {
 
 export const PARTICLES = {
   count: { desktop: 3200, tablet: 2000, mobile: 900 },
+  dprCap: 1.75,
+} as const
+
+/** Hero knowledge-graph tuning. */
+export const GRAPH = {
+  nodes: { desktop: 46, tablet: 36, mobile: 26 },
+  signals: 12,
   dprCap: 1.75,
 } as const
 

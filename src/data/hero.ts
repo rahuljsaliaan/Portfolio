@@ -14,6 +14,8 @@ export const heroCtas: CtaLink[] = [
 ]
 
 export const about: AboutContent = {
+  // TODO: tune this line — it sets the tone (depth, systems, the long arc of intelligence)
+  lead: 'I think in systems and depth — how structure becomes intelligence, and where that long arc is heading.',
   paragraphs: [
     [
       {

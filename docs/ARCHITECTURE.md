@@ -16,15 +16,15 @@ src/
 ├── data/            # content + types (the single source of truth)
 ├── lib/             # constants (motion/particle/z tuning) + utils (cn, lerp, damp, scroll)
 ├── providers/       # EnvProvider (reduced-motion/touch/visibility) + MotionConfigProvider
-├── hooks/           # useEnv, useMagnetic, useParallax, useActiveSection, useCountUp, useSceneActive
+├── hooks/           # useEnv, useMagnetic, useParallax, useActiveSection, useCountUp, useSceneActive, useWakatime
 ├── components/
 │   ├── layout/      # Navbar, ScrollProgress, Section, Footer, SkipLink
 │   ├── ui/          # Button, Card, Tag, GlowText, Reveal, Modal, SkillBar, RichText
 │   ├── icons/       # inline SVG brand marks + lookup map
 │   ├── cursor/      # CustomCursor
-│   ├── decor/       # ParallaxBlobs
-│   ├── three/       # HeroScene, AbyssParticles, AchievementScene, SceneFallback, SceneBoundary
-│   └── sections/    # Hero, About, Skills, Experience, Projects (+Modal/Detail), Achievements, Contact
+│   ├── decor/       # Atmosphere (depth gradient + caustics), ParallaxBlobs
+│   ├── three/       # HeroScene, KnowledgeGraph, AchievementScene, SceneFallback, SceneBoundary
+│   └── sections/    # Hero, About, Skills (+LiveLanguages), Experience, Projects (+Modal/Detail), Achievements, Contact
 ├── App.tsx          # providers + layout + section order
 ├── main.tsx         # root render + font imports
 └── index.css        # Tailwind v4 @theme tokens, fonts, base, reduced-motion, neon utilities
@@ -46,12 +46,24 @@ boundary — `lazy`/Suspense only catch loading, not runtime/WebGL-context failu
 `SceneFallback`). They are skipped entirely under reduced-motion, so three.js never even loads for
 those users.
 
-- `AbyssParticles` — one `THREE.Points`, one `BufferGeometry`, one draw call. Drift + cursor parallax
-  run in the **vertex shader** (a `uMouse` uniform damped from R3F's `state.pointer` in `useFrame`) —
-  no per-frame React renders.
+- `KnowledgeGraph` (hero) — glowing nodes (a soft additive point shader with a depth fade) + edges
+  that follow the nodes' buoyant float, plus bidirectional "signal" packets (the two-currents nod),
+  a faint starfield, and rising bubbles. Two nested groups: continuous slow spin inside a
+  cursor-tilt group (damped from `state.pointer`). Glow is faked with additive blending — **no
+  postprocessing** — so the transparent canvas keeps showing the atmosphere behind it. A radial CSS
+  mask on the canvas fades the graph into the abyss at the edges (no hard cut). Tune via `GRAPH` in
+  `lib/constants.ts`.
+- `AchievementScene` — a fresnel-glow icosahedron (custom `ShaderMaterial`).
 - `useSceneActive` flips each `<Canvas frameloop>` between `always` and `never` so rendering pauses
   when the scene is off-screen or the tab is hidden. DPR is capped (`[1, 1.75]`) with drei's
   `PerformanceMonitor` + `AdaptiveDpr`.
+
+## Live data (WakaTime)
+
+`useWakatime` fetches a **public** WakaTime embed-JSON URL (configured in `src/data/wakatime.ts`)
+client-side and renders it as liquid "tanks" in `LiveLanguages`. No API key is used (a static site
+can't hold one safely), so it relies on a public share URL; it falls back to a curated language list
+when the URL is empty or the fetch is blocked (e.g. CORS). See docs/CONTENT-GUIDE.md.
 
 ## Performance
 

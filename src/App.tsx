@@ -5,6 +5,7 @@ import { ScrollProgress } from '@/components/layout/ScrollProgress'
 import { SkipLink } from '@/components/layout/SkipLink'
 import { Footer } from '@/components/layout/Footer'
 import { CustomCursor } from '@/components/cursor/CustomCursor'
+import { Atmosphere } from '@/components/decor/Atmosphere'
 import { ParallaxBlobs } from '@/components/decor/ParallaxBlobs'
 import { Hero } from '@/components/sections/Hero'
 import { About } from '@/components/sections/About'
@@ -18,6 +19,7 @@ export default function App() {
   return (
     <EnvProvider>
       <MotionConfigProvider>
+        <Atmosphere />
         <ParallaxBlobs />
         <SkipLink />
         <CustomCursor />

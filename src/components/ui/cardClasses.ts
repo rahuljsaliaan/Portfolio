@@ -21,6 +21,7 @@ export function cardClasses(accent: Accent = 'cyan', interactive = false) {
   return cn(
     'relative rounded-2xl border bg-ocean-deep/70 backdrop-blur-sm transition-all duration-300',
     ACCENT[accent].border,
-    interactive && ACCENT[accent].hover,
+    // gentle buoyant lift on hover — the "liquid" feel
+    interactive && cn('hover:-translate-y-1', ACCENT[accent].hover),
   )
 }

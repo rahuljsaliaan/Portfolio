@@ -18,9 +18,19 @@ utilities (`bg-*`, `text-*`, `border-*`).
 | `--color-jelly-violet` | `#B388FF` | `jelly-violet` | Tertiary accent — depth/contrast, sparingly |
 | `--color-foam-white` | `#E6F1FF` | `foam-white` | Primary text |
 | `--color-drift-gray` | `#8492A6` | `drift-gray` | Secondary text |
+| `--color-seafoam` | `#5EF2C9` | `seafoam` | Aqua-green — living/organic accents |
+| `--color-nebula` | `#FF6BD6` | `nebula` | Soft magenta — celestial highlights, sparse |
+| `--color-starlight` | `#CFE6FF` | `starlight` | Pale blue-white — stars, faint glints |
+| `--color-abyss-deep` | `#080A12` | `abyss-deep` | Deepest water — bottom of the depth gradient |
 
 Opacity modifiers work (`text-current-cyan/60`, `border-current-cyan/15`). The site is dark-only
 (`color-scheme: dark`).
+
+**Atmosphere (deep water meets deep space):** a fixed backmost `Atmosphere` layer renders a
+surface-light → abyss vertical gradient plus a faint drifting caustic shimmer (SVG fractal noise);
+`ParallaxBlobs` adds mid-depth nebula/teal/violet glows. The core motion easing is
+`--ease-liquid` (`EASE_LIQUID` in `lib/constants.ts`) — a gentle buoyant settle. Keep the celestial
+magenta (`nebula`) rare; cyan/teal carry the palette.
 
 ## Typography
 

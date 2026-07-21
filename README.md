@@ -2,8 +2,8 @@
 
 A single-page personal portfolio with an "Abyssal Neon" identity (Material Ocean deep-blue base +
 bioluminescent neon), built to read as a senior AI-systems engineer. Heavy, purposeful motion
-(a Three.js hero particle field, custom cursor, scroll choreography) that degrades gracefully and
-stays fast.
+(a Three.js knowledge-graph hero drifting in deep water, custom cursor, scroll choreography) that
+degrades gracefully and stays fast.
 
 ## Stack
 

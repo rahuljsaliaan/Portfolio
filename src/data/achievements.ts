@@ -1,4 +1,4 @@
-import { Cpu, TrendingUp, Trophy } from 'lucide-react'
+import { Cpu, Medal, TrendingUp } from 'lucide-react'
 import type { AchievementChip, Stat } from './types'
 
 export const stats: Stat[] = [
@@ -13,6 +13,5 @@ export const achievementChips: AchievementChip[] = [
   { label: 'Promoted to SDE 2 (Jul 2026)', icon: TrendingUp, real: true },
   // real in substance — refine wording
   { label: 'Leads AI harness architecture at Auxify', icon: Cpu, real: true },
-  // TODO: dummy — replace or remove
-  { label: 'Hackathon winner', icon: Trophy },
+  { label: 'Hackathon finalist', icon: Medal, real: true },
 ]
