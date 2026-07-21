@@ -1,4 +1,4 @@
-import { useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 import { GRAPH } from '@/lib/constants'
@@ -161,18 +161,72 @@ function GraphBody() {
   const signalPositions = useMemo(() => new Float32Array(data.signals.length * 3), [data])
   const uniforms = useMemo(() => ({ uNear: { value: 8 }, uFar: { value: 22 } }), [])
 
+  const groupRef = useRef<THREE.Group>(null)
+  const ndc = useRef(new THREE.Vector2(-10, -10)) // cursor NDC; starts far off (no wake at rest)
+  const activity = useRef(0) // ramps to 1 on move, decays when still
+  const tmp = useMemo(
+    () => ({ v: new THREE.Vector3(), dir: new THREE.Vector3(), cur: new THREE.Vector3() }),
+    [],
+  )
+
+  useEffect(() => {
+    const onMove = (e: MouseEvent) => {
+      ndc.current.set(
+        (e.clientX / window.innerWidth) * 2 - 1,
+        -((e.clientY / window.innerHeight) * 2 - 1),
+      )
+      activity.current = 1
+    }
+    window.addEventListener('mousemove', onMove, { passive: true })
+    return () => window.removeEventListener('mousemove', onMove)
+  }, [])
+
   useFrame((state, delta) => {
     const t = state.clock.elapsedTime
     const { positions, basePositions, phases, freqs, amps, count } = data
+
+    // cursor wake — project the cursor onto the graph and shove nearby nodes
+    // aside; the energy decays when the mouse stops, so the water settles.
+    activity.current *= Math.exp(-delta * GRAPH.wake.decay)
+    const wake = activity.current
+    const grp = groupRef.current
+    let doWake = false
+    if (wake > 0.002 && grp) {
+      doWake = true
+      const cam = state.camera
+      tmp.v.set(ndc.current.x, ndc.current.y, 0.5).unproject(cam)
+      tmp.dir.copy(tmp.v).sub(cam.position).normalize()
+      const tHit = -cam.position.z / tmp.dir.z
+      tmp.v.copy(cam.position).addScaledVector(tmp.dir, tHit)
+      grp.updateWorldMatrix(true, false)
+      tmp.cur.copy(tmp.v)
+      grp.worldToLocal(tmp.cur)
+    }
 
     for (let i = 0; i < count; i++) {
       const o = i * 3
       const ph = phases[i]
       const f = freqs[i]
       const a = amps[i]
-      positions[o] = basePositions[o] + Math.sin(t * f + ph) * a
-      positions[o + 1] = basePositions[o + 1] + Math.cos(t * f * 0.9 + ph) * a
-      positions[o + 2] = basePositions[o + 2] + Math.sin(t * f * 0.7 + ph * 1.3) * a
+      let px = basePositions[o] + Math.sin(t * f + ph) * a
+      let py = basePositions[o + 1] + Math.cos(t * f * 0.9 + ph) * a
+      let pz = basePositions[o + 2] + Math.sin(t * f * 0.7 + ph * 1.3) * a
+      if (doWake) {
+        const dx = px - tmp.cur.x
+        const dy = py - tmp.cur.y
+        const dz = pz - tmp.cur.z
+        const dist = Math.sqrt(dx * dx + dy * dy + dz * dz) + 0.0001
+        if (dist < GRAPH.wake.radius) {
+          const falloff = 1 - dist / GRAPH.wake.radius
+          const amt = (GRAPH.wake.strength * falloff * falloff * wake) / dist
+          px += dx * amt
+          py += dy * amt
+          pz += dz * amt
+        }
+      }
+      positions[o] = px
+      positions[o + 1] = py
+      positions[o + 2] = pz
     }
     if (nodesRef.current) {
       ;(nodesRef.current.geometry.getAttribute('position') as THREE.BufferAttribute).needsUpdate = true
@@ -216,7 +270,7 @@ function GraphBody() {
   })
 
   return (
-    <group>
+    <group ref={groupRef}>
       <lineSegments ref={edgesRef} frustumCulled={false}>
         <bufferGeometry>
           <bufferAttribute attach="attributes-position" args={[data.edgePositions, 3]} />

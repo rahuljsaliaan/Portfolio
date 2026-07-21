@@ -38,6 +38,8 @@ export const GRAPH = {
   nodes: { desktop: 46, tablet: 36, mobile: 26 },
   signals: 12,
   dprCap: 1.75,
+  // cursor wake: how far it reaches, how hard it shoves, how fast it settles
+  wake: { radius: 2.4, strength: 0.7, decay: 2.6 },
 } as const
 
 /** z-index scale — one place so nothing fights. */
