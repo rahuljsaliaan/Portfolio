@@ -1,42 +1,35 @@
-import { m } from 'framer-motion'
 import { Card } from '@/components/ui/Card'
 import { Reveal } from '@/components/ui/Reveal'
+import { TechGlyph } from '@/components/ui/TechGlyph'
 import type { LanguageStat } from '@/data/types'
-import { useEnv } from '@/hooks/useEnv'
+import { useCountUp } from '@/hooks/useCountUp'
 import { useWakatime, type WakatimeStatus } from '@/hooks/useWakatime'
-import { EASE_LIQUID } from '@/lib/constants'
+import { techIcon } from '@/lib/techIcons'
 import { cn } from '@/lib/utils'
 
-const SURFACE =
-  'absolute inset-x-0 -top-0.5 h-1.5 rounded-full bg-current-cyan/90 shadow-[0_0_10px_var(--color-current-cyan)]'
-const LIQUID = 'absolute inset-x-0 bottom-0 rounded-t-full bg-gradient-to-t from-biolume-teal to-current-cyan'
-
-function LanguageTank({ lang, delay }: { lang: LanguageStat; delay: number }) {
-  const { reducedMotion } = useEnv()
-  const fill = Math.max(5, Math.min(100, lang.percent))
+function LanguageStatTile({ lang }: { lang: LanguageStat }) {
+  const { ref, value } = useCountUp<HTMLDivElement>(lang.hours)
+  const icon = techIcon(lang.name)
   return (
-    <div className="flex w-14 flex-col items-center gap-2 sm:w-[4.5rem]">
-      <div className="relative h-32 w-9 overflow-hidden rounded-full border border-current-cyan/20 bg-ocean-abyss/50 sm:h-40 sm:w-11">
-        {reducedMotion ? (
-          <div className={LIQUID} style={{ height: `${fill}%` }}>
-            <div className={SURFACE} />
-          </div>
-        ) : (
-          <m.div
-            className={LIQUID}
-            initial={{ height: 0 }}
-            whileInView={{ height: `${fill}%` }}
-            viewport={{ once: true, amount: 0.6 }}
-            transition={{ duration: 1.1, ease: EASE_LIQUID, delay }}
-          >
-            <div className={cn(SURFACE, 'animate-surface-bob')} />
-          </m.div>
-        )}
+    <div className="flex min-w-[5rem] flex-col items-center gap-2 text-center">
+      {icon ? (
+        <TechGlyph icon={icon} className="size-7" />
+      ) : (
+        <span
+          aria-hidden={true}
+          className="size-4 rounded-full"
+          style={{ backgroundColor: lang.color ?? 'var(--color-current-cyan)' }}
+        />
+      )}
+      <div
+        ref={ref}
+        className="font-mono text-2xl font-bold text-current-cyan text-glow-cyan sm:text-3xl"
+      >
+        <span aria-hidden={true}>{value}</span>
+        <span className="ml-0.5 text-sm font-normal text-drift-gray">h</span>
+        <span className="sr-only">{lang.hours} hours</span>
       </div>
-      <span className="font-mono text-[11px] text-current-cyan">{Math.round(lang.percent)}%</span>
-      <span className="max-w-[4.5rem] text-center font-mono text-[11px] leading-tight text-foam-white/85">
-        {lang.name}
-      </span>
+      <div className="font-mono text-xs text-foam-white/85">{lang.name}</div>
     </div>
   )
 }
@@ -58,19 +51,19 @@ function StatusBadge({ status }: { status: WakatimeStatus }) {
   )
 }
 
-/** Live coding-language mix as liquid-filling tanks. */
+/** "Recently coding" — logo + hours invested per language (never a percentage/loader). */
 export function LiveLanguages() {
   const { languages, status } = useWakatime()
   return (
     <Reveal className="mb-6">
       <Card accent="cyan" className="p-6 sm:p-8">
-        <div className="mb-6 flex items-center justify-between gap-4">
+        <div className="mb-8 flex items-center justify-between gap-4">
           <h3 className="font-display text-lg font-semibold text-foam-white">Recently coding</h3>
           <StatusBadge status={status} />
         </div>
-        <div className="flex flex-wrap justify-center gap-4 sm:gap-7">
-          {languages.map((lang, i) => (
-            <LanguageTank key={lang.name} lang={lang} delay={i * 0.08} />
+        <div className="flex flex-wrap items-start justify-center gap-x-8 gap-y-7 sm:gap-x-12">
+          {languages.map((lang) => (
+            <LanguageStatTile key={lang.name} lang={lang} />
           ))}
         </div>
       </Card>

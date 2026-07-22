@@ -46,10 +46,19 @@ export function Hero() {
             </p>
           </StaggerItem>
           <StaggerItem>
-            <p className="mt-5 font-mono text-sm text-drift-gray">
-              <span className="text-drift-gray/80">{heroFocus.label} </span>
-              <RotatingText items={heroFocus.areas} className="text-current-cyan text-glow-cyan" />
-            </p>
+            <div className="mt-8 inline-flex items-center gap-2.5 rounded-full border border-current-cyan/25 bg-ocean-deep/40 py-2 pl-3 pr-4 backdrop-blur-sm">
+              <span className="relative flex size-2.5">
+                <span className="absolute inline-flex size-full animate-ping rounded-full bg-current-cyan opacity-60" />
+                <span className="relative inline-flex size-2.5 rounded-full bg-current-cyan shadow-[0_0_8px_var(--color-current-cyan)]" />
+              </span>
+              <span className="font-mono text-[10px] uppercase tracking-[0.15em] text-drift-gray sm:text-[11px]">
+                {heroFocus.label}
+              </span>
+              <RotatingText
+                items={heroFocus.areas}
+                className="min-w-[8rem] text-left font-mono text-xs font-medium text-current-cyan sm:min-w-[9.5rem] sm:text-sm"
+              />
+            </div>
           </StaggerItem>
           <StaggerItem>
             <div className="mt-10 flex flex-wrap items-center gap-4">

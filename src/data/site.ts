@@ -28,7 +28,7 @@ export const sectionMeta: Record<Exclude<SectionId, 'hero'>, SectionMeta> = {
   skills: { eyebrow: 'WHAT I WORK WITH', title: 'Skills matrix', accent: 'cyan' },
   experience: { eyebrow: 'THE PATH SO FAR', title: 'Experience', accent: 'teal' },
   projects: { eyebrow: 'SELECTED WORK', title: 'Projects & case studies', accent: 'violet' },
-  achievements: { eyebrow: 'BY THE NUMBERS', title: 'Achievements & stats', accent: 'nebula' },
+  achievements: { eyebrow: 'BY THE NUMBERS', title: 'Achievements & stats', accent: 'seafoam' },
   contact: { eyebrow: 'SAY HELLO', title: 'Get in touch', accent: 'seafoam' },
 }
 

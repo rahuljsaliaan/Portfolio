@@ -11,12 +11,12 @@ export const wakatime = {
 } as const
 
 // Illustrative fallback shown until shareUrl is set (or if the fetch is blocked).
-// TODO: these percentages are placeholders.
+// TODO: these hour counts are placeholders — real numbers come from WakaTime.
 export const fallbackLanguages: LanguageStat[] = [
-  { name: 'TypeScript', percent: 34 },
-  { name: 'Python', percent: 27 },
-  { name: 'Go', percent: 15 },
-  { name: 'JavaScript', percent: 12 },
-  { name: 'Java', percent: 7 },
-  { name: 'Other', percent: 5 },
+  { name: 'TypeScript', hours: 132, color: '#38F2E5' },
+  { name: 'Python', hours: 98, color: '#5EF2C9' },
+  { name: 'JavaScript', hours: 61, color: '#B388FF' },
+  { name: 'Go', hours: 46, color: '#00BFA5' },
+  { name: 'Java', hours: 24, color: '#FF6BD6' },
+  { name: 'Rust', hours: 12, color: '#CFE6FF' },
 ]

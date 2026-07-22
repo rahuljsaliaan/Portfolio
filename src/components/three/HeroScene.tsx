@@ -5,7 +5,7 @@ import { useSceneActive } from '@/hooks/useSceneActive'
 import { GRAPH } from '@/lib/constants'
 
 // Fades the canvas into the abyss toward the edges so the graph never "cuts".
-const MASK = 'radial-gradient(ellipse 78% 74% at 50% 46%, #000 52%, transparent 92%)'
+const MASK = 'radial-gradient(ellipse 74% 74% at 64% 46%, #000 50%, transparent 92%)'
 
 /**
  * Lazy-loaded hero: a knowledge graph drifting in deep water. Renders only while

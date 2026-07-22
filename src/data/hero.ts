@@ -14,14 +14,8 @@ export const heroCtas: CtaLink[] = [
 ]
 
 export const heroFocus = {
-  label: 'Currently thinking about',
-  areas: [
-    'agent harness design',
-    'LLM pipelines',
-    'knowledge graphs',
-    'retrieval & RAG',
-    'system design',
-  ],
+  label: 'Thinking about',
+  areas: ['agent harnesses', 'LLM pipelines', 'knowledge graphs', 'retrieval & RAG', 'system design'],
 }
 
 export const about: AboutContent = {
