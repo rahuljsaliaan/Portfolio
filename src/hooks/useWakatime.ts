@@ -5,7 +5,7 @@ import { fallbackLanguages, wakatime } from '@/data/wakatime'
 export type WakatimeStatus = 'loading' | 'live' | 'fallback'
 
 interface ShareResponse {
-  data?: Array<{ name?: string; percent?: number; color?: string }>
+  data?: Array<{ name?: string; total_seconds?: number; hours?: number; color?: string }>
 }
 
 const MAX_LANGUAGES = 6
@@ -30,10 +30,21 @@ export function useWakatime() {
       })
       .then((json) => {
         const langs = (json.data ?? [])
-          .filter((d): d is { name: string; percent: number; color?: string } =>
-            typeof d?.name === 'string' && typeof d?.percent === 'number',
+          .filter((d): d is { name: string; total_seconds?: number; hours?: number; color?: string } =>
+            typeof d?.name === 'string',
           )
-          .map((d) => ({ name: d.name, percent: d.percent, color: d.color }))
+          .map((d) => ({
+            name: d.name,
+            hours:
+              typeof d.total_seconds === 'number'
+                ? Math.round(d.total_seconds / 3600)
+                : typeof d.hours === 'number'
+                  ? Math.round(d.hours)
+                  : 0,
+            color: typeof d.color === 'string' ? d.color : undefined,
+          }))
+          .filter((l) => l.hours > 0)
+          .sort((a, b) => b.hours - a.hours)
           .slice(0, MAX_LANGUAGES)
         if (cancelled) return
         if (langs.length) {

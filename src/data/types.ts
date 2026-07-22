@@ -57,24 +57,21 @@ export interface AboutContent {
 
 export interface Skill {
   name: string
-  /** 0–100, illustrative — drives the animated proficiency bar length only. */
-  level?: number
 }
 
 export interface SkillCategory {
   id: string
   title: string
   icon: LucideIcon
-  display: 'bars' | 'tags'
   /** the loudest, most-glowing card */
   highlight?: boolean
   skills: Skill[]
 }
 
-/** A single language's share of coding time (from WakaTime, or the fallback). */
+/** Coding time on a language, in hours (from WakaTime, or the fallback). */
 export interface LanguageStat {
   name: string
-  percent: number
+  hours: number
   color?: string
 }
 

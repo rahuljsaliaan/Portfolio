@@ -23,7 +23,7 @@ src/
 │   ├── icons/       # inline SVG brand marks + lookup map
 │   ├── cursor/      # CustomCursor
 │   ├── decor/       # OceanBackground (persistent WebGL ocean + gradient fallback)
-│   ├── three/       # OceanScene, HeroScene, KnowledgeGraph, AchievementScene, SceneFallback, SceneBoundary
+│   ├── three/       # OceanScene (+WaterParticles), HeroScene, KnowledgeGraph, AchievementScene, SceneFallback, SceneBoundary
 │   └── sections/    # Hero, About, Skills (+LiveLanguages), Experience, Projects (+Modal/Detail), Achievements, Contact
 ├── App.tsx          # providers + layout + section order
 ├── main.tsx         # root render + font imports
@@ -46,17 +46,18 @@ boundary — `lazy`/Suspense only catch loading, not runtime/WebGL-context failu
 gradient / `SceneFallback`). They are skipped entirely under reduced-motion, so three.js never even
 loads for those users.
 
-- `OceanScene` (persistent background) — a fixed full-viewport fragment shader: domain-warped FBM
-  currents, a cursor wake ("fish in water"), and a scroll-driven descent (the gradient deepens as you
-  scroll). It's the continuous "ocean" behind every section. Rendered at low DPR (`[0.55, 0.9]`) with
-  `PerformanceMonitor`; a static CSS gradient is the reduced-motion / no-WebGL fallback.
+- `OceanScene` (persistent background) — a fixed full-viewport shader (domain-warped FBM currents,
+  caustics, god-rays, a velocity-driven cursor swirl) plus `WaterParticles` (bubbles rising + dust
+  sinking) behind every section. Scroll = descent: light fades and the scene darkens toward the
+  abyss, and the particles thin out. Low DPR + `PerformanceMonitor`; a static CSS gradient is the
+  reduced-motion / no-WebGL fallback.
 
 - `KnowledgeGraph` (hero) — glowing nodes (a soft additive point shader with a depth fade) + edges
-  that follow the nodes' buoyant float, plus bidirectional "signal" packets (the two-currents nod),
-  a faint starfield, and rising bubbles. Two nested groups: continuous slow spin inside a
-  cursor-tilt group (damped from `state.pointer`). Glow is faked with additive blending — **no
-  postprocessing** — so the transparent canvas keeps showing the atmosphere behind it. A radial CSS
-  mask on the canvas fades the graph into the abyss at the edges (no hard cut). Tune via `GRAPH` in
+  that follow the nodes' buoyant float, plus bidirectional "signal" packets that make nodes flash as
+  they arrive (neural firing). Two nested groups: a continuous slow spin inside a cursor-tilt group
+  that follows the mouse with a wide range but heavy, water-like damping. Glow is faked with additive
+  blending — **no postprocessing** — so the transparent canvas keeps showing the ocean behind it. A
+  radial CSS mask fades the graph into the abyss at the edges (no hard cut). Tune via `GRAPH` in
   `lib/constants.ts`.
 - `AchievementScene` — a fresnel-glow icosahedron (custom `ShaderMaterial`).
 - `useSceneActive` flips each `<Canvas frameloop>` between `always` and `never` so rendering pauses

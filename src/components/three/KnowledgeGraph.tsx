@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 import { GRAPH } from '@/lib/constants'
+import { getCircleTexture } from './circleTexture'
 import { damp } from '@/lib/utils'
 
 // Node palette: mostly current-cyan, with living teal/seafoam and occasional
@@ -14,38 +15,17 @@ const NODE_COLORS = [
   new THREE.Color('#FF6BD6'),
 ]
 function pickColor(r: number) {
-  if (r < 0.5) return NODE_COLORS[0]
-  if (r < 0.72) return NODE_COLORS[1]
-  if (r < 0.86) return NODE_COLORS[2]
-  if (r < 0.96) return NODE_COLORS[3]
-  return NODE_COLORS[4]
+  if (r < 0.58) return NODE_COLORS[0] // cyan (ocean core)
+  if (r < 0.85) return NODE_COLORS[1] // seafoam
+  if (r < 0.97) return NODE_COLORS[2] // teal
+  if (r < 0.995) return NODE_COLORS[3] // violet (rare — jellyfish)
+  return NODE_COLORS[4] // nebula magenta (a single cosmic pop, barely ever)
 }
 function nodeCount() {
   const w = window.innerWidth
   if (w < 640) return GRAPH.nodes.mobile
   if (w < 1024) return GRAPH.nodes.tablet
   return GRAPH.nodes.desktop
-}
-
-// Soft round sprite so points aren't the default square. One shared texture.
-let circleTexture: THREE.CanvasTexture | null = null
-function getCircleTexture() {
-  if (circleTexture) return circleTexture
-  const size = 64
-  const canvas = document.createElement('canvas')
-  canvas.width = size
-  canvas.height = size
-  const ctx = canvas.getContext('2d')
-  if (ctx) {
-    const g = ctx.createRadialGradient(size / 2, size / 2, 0, size / 2, size / 2, size / 2)
-    g.addColorStop(0, 'rgba(255,255,255,1)')
-    g.addColorStop(0.35, 'rgba(255,255,255,0.6)')
-    g.addColorStop(1, 'rgba(255,255,255,0)')
-    ctx.fillStyle = g
-    ctx.fillRect(0, 0, size, size)
-  }
-  circleTexture = new THREE.CanvasTexture(canvas)
-  return circleTexture
 }
 
 // Soft round neuron; brightens + swells briefly when a signal fires into it.
@@ -65,7 +45,7 @@ const nodeVertex = /* glsl */ `
     vec4 mv = modelViewMatrix * vec4(position, 1.0);
     vFade = 1.0 - clamp((-mv.z - uNear) / (uFar - uNear), 0.0, 1.0);
     float breathe = 0.9 + 0.1 * sin(uTime * 1.4 + position.x * 2.0 + position.y);
-    float size = aSize * breathe * (1.0 + aActivation * 0.9);
+    float size = aSize * breathe * (1.0 + aActivation * 0.5);
     gl_PointSize = size * (300.0 / -mv.z);
     gl_Position = projectionMatrix * mv;
   }
@@ -78,8 +58,8 @@ const nodeFragment = /* glsl */ `
     float d = length(gl_PointCoord - 0.5);
     if (d > 0.5) discard;
     float glow = pow(smoothstep(0.5, 0.0, d), 1.5);
-    vec3 col = vColor * (1.0 + vAct * 2.5);
-    gl_FragColor = vec4(col, glow * vFade * (0.82 + vAct * 0.18));
+    vec3 col = vColor * (1.0 + vAct * 1.4);
+    gl_FragColor = vec4(col, glow * vFade * (0.8 + vAct * 0.2));
   }
 `
 
@@ -135,7 +115,7 @@ function buildGraph(count: number): GraphData {
     colors[i * 3 + 2] = col.b
     sizes[i] = 0.7 + Math.random() * 1.1
     phases[i] = Math.random() * Math.PI * 2
-    freqs[i] = 0.35 + Math.random() * 0.4
+    freqs[i] = 0.22 + Math.random() * 0.26
     amps[i] = 0.12 + Math.random() * 0.16
   }
 
@@ -178,7 +158,7 @@ function buildGraph(count: number): GraphData {
       a: edges[e * 2],
       b: edges[e * 2 + 1],
       t: Math.random(),
-      speed: (0.2 + Math.random() * 0.25) * (i % 2 === 0 ? 1 : -1),
+      speed: (0.12 + Math.random() * 0.13) * (i % 2 === 0 ? 1 : -1),
     }
   })
 
@@ -211,74 +191,22 @@ function GraphBody() {
   )
   const circle = useMemo(() => getCircleTexture(), [])
 
-  const groupRef = useRef<THREE.Group>(null)
-  const ndc = useRef(new THREE.Vector2(-10, -10))
-  const activity = useRef(0)
-  const tmp = useMemo(
-    () => ({ v: new THREE.Vector3(), dir: new THREE.Vector3(), cur: new THREE.Vector3() }),
-    [],
-  )
-
-  useEffect(() => {
-    const onMove = (e: MouseEvent) => {
-      ndc.current.set(
-        (e.clientX / window.innerWidth) * 2 - 1,
-        -((e.clientY / window.innerHeight) * 2 - 1),
-      )
-      activity.current = 1
-    }
-    window.addEventListener('mousemove', onMove, { passive: true })
-    return () => window.removeEventListener('mousemove', onMove)
-  }, [])
-
   useFrame((state, delta) => {
     const t = state.clock.elapsedTime
     uniforms.uTime.value = t
     const { positions, basePositions, phases, freqs, amps, count, activations } = data
 
-    // cursor wake — shove nearby neurons aside; settles when the mouse stops
-    activity.current *= Math.exp(-delta * GRAPH.wake.decay)
-    const wake = activity.current
-    const grp = groupRef.current
-    let doWake = false
-    if (wake > 0.002 && grp) {
-      doWake = true
-      const cam = state.camera
-      tmp.v.set(ndc.current.x, ndc.current.y, 0.5).unproject(cam)
-      tmp.dir.copy(tmp.v).sub(cam.position).normalize()
-      const tHit = -cam.position.z / tmp.dir.z
-      tmp.v.copy(cam.position).addScaledVector(tmp.dir, tHit)
-      grp.updateWorldMatrix(true, false)
-      tmp.cur.copy(tmp.v)
-      grp.worldToLocal(tmp.cur)
-    }
-
+    // gentle buoyant float only — no cursor push on the nodes
     for (let i = 0; i < count; i++) {
       const o = i * 3
       const ph = phases[i]
       const f = freqs[i]
       const a = amps[i]
-      let px = basePositions[o] + Math.sin(t * f + ph) * a
-      let py = basePositions[o + 1] + Math.cos(t * f * 0.9 + ph) * a
-      let pz = basePositions[o + 2] + Math.sin(t * f * 0.7 + ph * 1.3) * a
-      if (doWake) {
-        const dx = px - tmp.cur.x
-        const dy = py - tmp.cur.y
-        const dz = pz - tmp.cur.z
-        const dist = Math.sqrt(dx * dx + dy * dy + dz * dz) + 0.0001
-        if (dist < GRAPH.wake.radius) {
-          const falloff = 1 - dist / GRAPH.wake.radius
-          const amt = (GRAPH.wake.strength * falloff * falloff * wake) / dist
-          px += dx * amt
-          py += dy * amt
-          pz += dz * amt
-        }
-      }
-      positions[o] = px
-      positions[o + 1] = py
-      positions[o + 2] = pz
+      positions[o] = basePositions[o] + Math.sin(t * f + ph) * a
+      positions[o + 1] = basePositions[o + 1] + Math.cos(t * f * 0.9 + ph) * a
+      positions[o + 2] = basePositions[o + 2] + Math.sin(t * f * 0.7 + ph * 1.3) * a
       // neural activation decays each frame
-      activations[i] *= Math.exp(-delta * 3)
+      activations[i] *= Math.exp(-delta * 3.5)
     }
     if (nodesRef.current) {
       const g = nodesRef.current.geometry
@@ -329,7 +257,7 @@ function GraphBody() {
   })
 
   return (
-    <group ref={groupRef}>
+    <group>
       <lineSegments ref={edgesRef} frustumCulled={false}>
         <bufferGeometry>
           <bufferAttribute attach="attributes-position" args={[data.edgePositions, 3]} />
@@ -337,7 +265,7 @@ function GraphBody() {
         <lineBasicMaterial
           color="#38F2E5"
           transparent
-          opacity={0.16}
+          opacity={0.12}
           blending={THREE.AdditiveBlending}
           depthWrite={false}
           toneMapped={false}
@@ -367,11 +295,11 @@ function GraphBody() {
         </bufferGeometry>
         <pointsMaterial
           map={circle}
-          size={0.22}
+          size={0.16}
           sizeAttenuation
-          color="#e6f1ff"
+          color="#9ff5ea"
           transparent
-          opacity={0.95}
+          opacity={0.8}
           depthWrite={false}
           blending={THREE.AdditiveBlending}
           toneMapped={false}
@@ -381,112 +309,36 @@ function GraphBody() {
   )
 }
 
-function Starfield() {
-  const ref = useRef<THREE.Points>(null)
-  const circle = useMemo(() => getCircleTexture(), [])
-  const positions = useMemo(() => {
-    const n = 480
-    const arr = new Float32Array(n * 3)
-    for (let i = 0; i < n; i++) {
-      const r = 20 + Math.random() * 26
-      const theta = Math.random() * Math.PI * 2
-      const phi = Math.acos(2 * Math.random() - 1)
-      arr[i * 3] = r * Math.sin(phi) * Math.cos(theta)
-      arr[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta)
-      arr[i * 3 + 2] = r * Math.cos(phi) - 12
-    }
-    return arr
-  }, [])
-  useFrame((_, delta) => {
-    if (ref.current) ref.current.rotation.y += delta * 0.006
-  })
-  return (
-    <points ref={ref} frustumCulled={false}>
-      <bufferGeometry>
-        <bufferAttribute attach="attributes-position" args={[positions, 3]} />
-      </bufferGeometry>
-      <pointsMaterial
-        map={circle}
-        size={0.13}
-        sizeAttenuation
-        color="#cfe6ff"
-        transparent
-        opacity={0.7}
-        depthWrite={false}
-        toneMapped={false}
-      />
-    </points>
-  )
-}
-
-function Bubbles() {
-  const count = 24
-  const ref = useRef<THREE.Points>(null)
-  const circle = useMemo(() => getCircleTexture(), [])
-  const { positions, speeds } = useMemo(() => {
-    const positions = new Float32Array(count * 3)
-    const speeds = new Float32Array(count)
-    for (let i = 0; i < count; i++) {
-      positions[i * 3] = (Math.random() - 0.5) * 12
-      positions[i * 3 + 1] = (Math.random() - 0.5) * 10
-      positions[i * 3 + 2] = (Math.random() - 0.5) * 4
-      speeds[i] = 0.25 + Math.random() * 0.5
-    }
-    return { positions, speeds }
-  }, [])
-  useFrame((_, delta) => {
-    const pts = ref.current
-    if (!pts) return
-    const pos = pts.geometry.getAttribute('position') as THREE.BufferAttribute
-    for (let i = 0; i < count; i++) {
-      let y = pos.getY(i) + speeds[i] * delta
-      if (y > 5) y = -5
-      pos.setY(i, y)
-      pos.setX(i, pos.getX(i) + Math.sin((y + i) * 0.6) * 0.0015)
-    }
-    pos.needsUpdate = true
-  })
-  return (
-    <points ref={ref} frustumCulled={false}>
-      <bufferGeometry>
-        <bufferAttribute attach="attributes-position" args={[positions, 3]} />
-      </bufferGeometry>
-      <pointsMaterial
-        map={circle}
-        size={0.1}
-        sizeAttenuation
-        color="#7ff2e5"
-        transparent
-        opacity={0.32}
-        depthWrite={false}
-        blending={THREE.AdditiveBlending}
-        toneMapped={false}
-      />
-    </points>
-  )
-}
-
 /** The hero centerpiece: a living neural network / knowledge graph in deep water. */
 export function KnowledgeGraph() {
   const tiltRef = useRef<THREE.Group>(null)
   const spinRef = useRef<THREE.Group>(null)
+  const mouse = useRef({ x: 0, y: 0 })
 
-  useFrame((state, delta) => {
-    if (spinRef.current) spinRef.current.rotation.y += delta * 0.04
+  useEffect(() => {
+    const onMove = (e: MouseEvent) => {
+      mouse.current.x = (e.clientX / window.innerWidth) * 2 - 1
+      mouse.current.y = (e.clientY / window.innerHeight) * 2 - 1
+    }
+    window.addEventListener('mousemove', onMove, { passive: true })
+    return () => window.removeEventListener('mousemove', onMove)
+  }, [])
+
+  useFrame((_, delta) => {
+    if (spinRef.current) spinRef.current.rotation.y += delta * 0.015
     const tilt = tiltRef.current
     if (tilt) {
-      tilt.rotation.y = damp(tilt.rotation.y, state.pointer.x * 0.4, 2.5, delta)
-      tilt.rotation.x = damp(tilt.rotation.x, -state.pointer.y * 0.28, 2.5, delta)
+      // wider tilt (more sensitive to the mouse), but eased slowly — like water
+      tilt.rotation.y = damp(tilt.rotation.y, mouse.current.x * 0.7, 1.2, delta)
+      tilt.rotation.x = damp(tilt.rotation.x, mouse.current.y * 0.45, 1.2, delta)
     }
   })
 
   return (
-    <group ref={tiltRef}>
-      <Starfield />
+    <group ref={tiltRef} position={[1.7, 0, 0]}>
       <group ref={spinRef}>
         <GraphBody />
       </group>
-      <Bubbles />
     </group>
   )
 }

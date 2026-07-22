@@ -26,9 +26,9 @@ never need to touch a component. TypeScript will tell you if a required field is
 **Change the hero / about copy** → `hero.ts`. The About paragraphs are arrays of text segments so a
 segment can be a link (that's how "Oriv" is linked): `{ text: 'Oriv', href: '…', external: true }`.
 
-**Skills** → `skills.ts`. Each category has `display: 'bars' | 'tags'`. Bars use a `level` (0–100)
-that only drives bar length — the values are illustrative, so calibrate or switch the category to
-`'tags'`. `highlight: true` marks the loudest card. Icons are `lucide-react` components.
+**Skills** → `skills.ts`. Each category is just a list of skill tags — no proficiency levels or bars
+(a portfolio should show breadth, not imply a ceiling). `highlight: true` marks the loudest ("core")
+card. Icons are `lucide-react` components.
 
 **Experience** → `experience.ts`. Entries are newest-first (display order = DOM order). Flags:
 `current` (bright node + "Current" chip), `promotedFromPrevious` (renders the "Promoted ↑" connector
@@ -52,7 +52,8 @@ update `sectionOrder` (used by the scroll-spy) and the `SectionId` union in `typ
 
 ## Live languages (WakaTime)
 
-The "Recently coding" tanks in the Skills section pull from WakaTime. To go **live**:
+The "Recently coding" panel shows **hours per language** (from WakaTime `total_seconds`) — never a
+percentage. To go **live**:
 
 1. In WakaTime, enable **"Display languages publicly"** (profile settings).
 2. Open your **Languages** chart → **Embed** → copy the **JSON** URL
@@ -60,8 +61,8 @@ The "Recently coding" tanks in the Skills section pull from WakaTime. To go **li
 3. Paste it into `shareUrl` in `src/data/wakatime.ts`.
 
 The badge shows "live · WakaTime" when the fetch succeeds. Until then (or if a browser blocks the
-request via CORS), it shows the curated `fallbackLanguages` with a "sample" badge — edit those
-placeholder percentages to taste. If CORS blocks the live fetch on your deploy, switch to a
+request via CORS), it shows the curated `fallbackLanguages` (hours) with a "sample" badge — edit those
+placeholder hour counts to taste. If CORS blocks the live fetch on your deploy, switch to a
 build-time fetch (see docs/ARCHITECTURE.md → Live data).
 
 ## Page metadata (SEO / social)

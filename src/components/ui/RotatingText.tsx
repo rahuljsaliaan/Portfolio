@@ -1,13 +1,17 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useId, useState } from 'react'
 import { AnimatePresence, m } from 'framer-motion'
 import { useEnv } from '@/hooks/useEnv'
-import { EASE_OUT_EXPO } from '@/lib/constants'
+import { EASE_LIQUID } from '@/lib/constants'
 import { cn } from '@/lib/utils'
 
-/** Cycles through phrases with a blur-fade — a subtle "thinking" ticker. */
+/**
+ * Cycles through phrases. The text is run through an animated turbulence +
+ * displacement filter so it constantly wavers as if seen through water, and each
+ * swap emerges from / dissolves back into the murk on a slow buoyant ease.
+ */
 export function RotatingText({
   items,
-  interval = 2600,
+  interval = 2800,
   className,
 }: {
   items: string[]
@@ -16,6 +20,7 @@ export function RotatingText({
 }) {
   const { reducedMotion } = useEnv()
   const [index, setIndex] = useState(0)
+  const fid = 'ripple' + useId().replace(/:/g, '')
 
   useEffect(() => {
     if (reducedMotion || items.length <= 1) return
@@ -26,17 +31,52 @@ export function RotatingText({
   if (reducedMotion) return <span className={className}>{items[0]}</span>
 
   return (
-    <span className={cn('relative inline-block align-bottom', className)}>
+    <span
+      className={cn('relative inline-block align-bottom', className)}
+      style={{ filter: `url(#${fid})` }}
+    >
+      <svg aria-hidden={true} className="pointer-events-none absolute size-0">
+        <filter id={fid} x="-15%" y="-15%" width="130%" height="130%">
+          <feTurbulence type="fractalNoise" baseFrequency="0.012 0.028" numOctaves="2" seed="7" result="noise">
+            <animate
+              attributeName="baseFrequency"
+              dur="16s"
+              values="0.012 0.028; 0.02 0.02; 0.012 0.028"
+              repeatCount="indefinite"
+            />
+          </feTurbulence>
+          <feDisplacementMap
+            in="SourceGraphic"
+            in2="noise"
+            scale="2.6"
+            xChannelSelector="R"
+            yChannelSelector="G"
+          />
+        </filter>
+      </svg>
       <AnimatePresence mode="wait">
         <m.span
           key={index}
-          initial={{ opacity: 0, y: 10, filter: 'blur(4px)' }}
+          initial={{ opacity: 0, y: 14, filter: 'blur(8px)' }}
           animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-          exit={{ opacity: 0, y: -10, filter: 'blur(4px)' }}
-          transition={{ duration: 0.45, ease: EASE_OUT_EXPO }}
-          className="inline-block"
+          exit={{ opacity: 0, y: -14, filter: 'blur(8px)' }}
+          transition={{ duration: 0.7, ease: EASE_LIQUID }}
+          className="relative inline-block"
         >
           {items[index]}
+          {/* caustic light shaft sweeping across as the word surfaces */}
+          <m.span
+            aria-hidden={true}
+            className="pointer-events-none absolute inset-y-0 -inset-x-3"
+            style={{
+              background:
+                'linear-gradient(105deg, transparent 38%, rgba(159,245,234,0.6) 50%, transparent 62%)',
+              mixBlendMode: 'screen',
+            }}
+            initial={{ x: '-130%', opacity: 0 }}
+            animate={{ x: '130%', opacity: [0, 1, 1, 0] }}
+            transition={{ duration: 1, ease: 'easeInOut', delay: 0.12 }}
+          />
         </m.span>
       </AnimatePresence>
     </span>

@@ -1,45 +1,41 @@
 import { Braces, BrainCircuit, Database, LayoutDashboard, Server, Workflow } from 'lucide-react'
 import type { SkillCategory } from './types'
 
-// NOTE: `level` values are illustrative and drive bar length only — no real
-// proficiency metric is implied.
-// TODO: calibrate proficiency levels to taste (or flip a category to display:'tags').
+// Skills are shown as tags (breadth), never as proficiency bars — a portfolio
+// should read as signal, not imply a ceiling.
 export const skillCategories: SkillCategory[] = [
   {
     id: 'agentic-ai',
     title: 'Agentic AI & LLM Systems',
     icon: BrainCircuit,
-    display: 'bars',
     highlight: true,
     skills: [
-      { name: 'Agent harness design', level: 92 },
-      { name: 'LangChain', level: 88 },
-      { name: 'LangGraph', level: 85 },
-      { name: 'DSPy', level: 90 },
-      { name: 'Prompt & pipeline engineering', level: 90 },
-      { name: 'RAG & retrieval systems', level: 86 },
-      { name: 'LLM eval & observability (Langfuse)', level: 82 },
-      { name: 'Structured outputs (Pydantic/Zod)', level: 88 },
+      { name: 'Agent harness design' },
+      { name: 'LangChain' },
+      { name: 'LangGraph' },
+      { name: 'DSPy' },
+      { name: 'Prompt & pipeline engineering' },
+      { name: 'RAG & retrieval systems' },
+      { name: 'LLM eval & observability (Langfuse)' },
+      { name: 'Structured outputs (Pydantic/Zod)' },
     ],
   },
   {
     id: 'languages',
     title: 'Languages',
     icon: Braces,
-    display: 'bars',
     skills: [
-      { name: 'TypeScript', level: 92 },
-      { name: 'JavaScript', level: 90 },
-      { name: 'Python', level: 90 },
-      { name: 'Go', level: 78 },
-      { name: 'Java', level: 72 },
+      { name: 'TypeScript' },
+      { name: 'JavaScript' },
+      { name: 'Python' },
+      { name: 'Go' },
+      { name: 'Java' },
     ],
   },
   {
     id: 'backend',
     title: 'Backend & Architecture',
     icon: Server,
-    display: 'tags',
     skills: [
       { name: 'Node.js' },
       { name: 'Express' },
@@ -55,7 +51,6 @@ export const skillCategories: SkillCategory[] = [
     id: 'frontend',
     title: 'Frontend',
     icon: LayoutDashboard,
-    display: 'tags',
     skills: [
       { name: 'React' },
       { name: 'Next.js' },
@@ -69,7 +64,6 @@ export const skillCategories: SkillCategory[] = [
     id: 'data-infra',
     title: 'Data & Infra',
     icon: Database,
-    display: 'tags',
     skills: [
       { name: 'MongoDB' },
       { name: 'MySQL' },
@@ -84,7 +78,6 @@ export const skillCategories: SkillCategory[] = [
     id: 'practices',
     title: 'Practices',
     icon: Workflow,
-    display: 'tags',
     skills: [
       { name: 'DevOps' },
       { name: 'CI/CD' },
