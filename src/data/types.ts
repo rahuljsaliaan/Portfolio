@@ -4,6 +4,7 @@ import type { LucideIcon } from 'lucide-react'
 export type SectionId =
   | 'hero'
   | 'about'
+  | 'approach'
   | 'skills'
   | 'experience'
   | 'projects'

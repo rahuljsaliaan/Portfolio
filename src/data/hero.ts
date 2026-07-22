@@ -13,6 +13,17 @@ export const heroCtas: CtaLink[] = [
   { label: 'Get in touch', target: 'contact', variant: 'ghost' },
 ]
 
+export const heroFocus = {
+  label: 'Currently thinking about',
+  areas: [
+    'agent harness design',
+    'LLM pipelines',
+    'knowledge graphs',
+    'retrieval & RAG',
+    'system design',
+  ],
+}
+
 export const about: AboutContent = {
   // TODO: tune this line — it sets the tone (depth, systems, the long arc of intelligence)
   lead: 'I think in systems and depth — how structure becomes intelligence, and where that long arc is heading.',

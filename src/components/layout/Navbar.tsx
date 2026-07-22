@@ -50,7 +50,7 @@ export function Navbar() {
             <span className="text-current-cyan">.</span>
           </button>
 
-          <div className="hidden items-center gap-1 md:flex">
+          <div className="hidden items-center gap-1 lg:flex">
             {nav.map((item) => (
               <NavLink
                 key={item.id}
@@ -63,7 +63,7 @@ export function Navbar() {
 
           <button
             type="button"
-            className="grid size-10 place-items-center rounded-full border border-current-cyan/20 text-foam-white md:hidden"
+            className="grid size-10 place-items-center rounded-full border border-current-cyan/20 text-foam-white lg:hidden"
             onClick={() => setMenuOpen((o) => !o)}
             aria-label={menuOpen ? 'Close menu' : 'Open menu'}
             aria-expanded={menuOpen}
@@ -79,7 +79,7 @@ export function Navbar() {
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
-            className="border-b border-current-cyan/10 bg-ocean-abyss/95 backdrop-blur-lg md:hidden"
+            className="border-b border-current-cyan/10 bg-ocean-abyss/95 backdrop-blur-lg lg:hidden"
           >
             <div className="mx-auto flex max-w-6xl flex-col gap-1 px-6 py-4">
               {nav.map((item) => (

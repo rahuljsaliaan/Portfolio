@@ -13,6 +13,7 @@ export const site: SiteMeta = {
 /** Nav order (the hero is "home" and is reached via the logo / scroll-to-top). */
 export const nav: NavItem[] = [
   { id: 'about', label: 'About' },
+  { id: 'approach', label: 'Approach' },
   { id: 'skills', label: 'Skills' },
   { id: 'experience', label: 'Experience' },
   { id: 'projects', label: 'Projects' },
@@ -23,6 +24,7 @@ export const nav: NavItem[] = [
 /** Eyebrow + title for each section header. */
 export const sectionMeta: Record<Exclude<SectionId, 'hero'>, SectionMeta> = {
   about: { eyebrow: 'WHO I AM', title: 'About', accent: 'seafoam' },
+  approach: { eyebrow: 'HOW I BUILD', title: 'Approach', accent: 'violet' },
   skills: { eyebrow: 'WHAT I WORK WITH', title: 'Skills matrix', accent: 'cyan' },
   experience: { eyebrow: 'THE PATH SO FAR', title: 'Experience', accent: 'teal' },
   projects: { eyebrow: 'SELECTED WORK', title: 'Projects & case studies', accent: 'violet' },
@@ -34,6 +36,7 @@ export const sectionMeta: Record<Exclude<SectionId, 'hero'>, SectionMeta> = {
 export const sectionOrder: SectionId[] = [
   'hero',
   'about',
+  'approach',
   'skills',
   'experience',
   'projects',

@@ -27,30 +27,59 @@ function nodeCount() {
   return GRAPH.nodes.desktop
 }
 
-// Soft additive glow point, with a depth fade so far nodes dissolve (no hard cut).
+// Soft round sprite so points aren't the default square. One shared texture.
+let circleTexture: THREE.CanvasTexture | null = null
+function getCircleTexture() {
+  if (circleTexture) return circleTexture
+  const size = 64
+  const canvas = document.createElement('canvas')
+  canvas.width = size
+  canvas.height = size
+  const ctx = canvas.getContext('2d')
+  if (ctx) {
+    const g = ctx.createRadialGradient(size / 2, size / 2, 0, size / 2, size / 2, size / 2)
+    g.addColorStop(0, 'rgba(255,255,255,1)')
+    g.addColorStop(0.35, 'rgba(255,255,255,0.6)')
+    g.addColorStop(1, 'rgba(255,255,255,0)')
+    ctx.fillStyle = g
+    ctx.fillRect(0, 0, size, size)
+  }
+  circleTexture = new THREE.CanvasTexture(canvas)
+  return circleTexture
+}
+
+// Soft round neuron; brightens + swells briefly when a signal fires into it.
 const nodeVertex = /* glsl */ `
   attribute float aSize;
   attribute vec3 aColor;
+  attribute float aActivation;
   uniform float uNear;
   uniform float uFar;
+  uniform float uTime;
   varying vec3 vColor;
   varying float vFade;
+  varying float vAct;
   void main() {
     vColor = aColor;
+    vAct = aActivation;
     vec4 mv = modelViewMatrix * vec4(position, 1.0);
     vFade = 1.0 - clamp((-mv.z - uNear) / (uFar - uNear), 0.0, 1.0);
-    gl_PointSize = aSize * (300.0 / -mv.z);
+    float breathe = 0.9 + 0.1 * sin(uTime * 1.4 + position.x * 2.0 + position.y);
+    float size = aSize * breathe * (1.0 + aActivation * 0.9);
+    gl_PointSize = size * (300.0 / -mv.z);
     gl_Position = projectionMatrix * mv;
   }
 `
 const nodeFragment = /* glsl */ `
   varying vec3 vColor;
   varying float vFade;
+  varying float vAct;
   void main() {
     float d = length(gl_PointCoord - 0.5);
     if (d > 0.5) discard;
-    float glow = pow(smoothstep(0.5, 0.0, d), 1.6);
-    gl_FragColor = vec4(vColor, glow * vFade);
+    float glow = pow(smoothstep(0.5, 0.0, d), 1.5);
+    vec3 col = vColor * (1.0 + vAct * 2.5);
+    gl_FragColor = vec4(col, glow * vFade * (0.82 + vAct * 0.18));
   }
 `
 
@@ -60,6 +89,7 @@ interface GraphData {
   positions: Float32Array
   sizes: Float32Array
   colors: Float32Array
+  activations: Float32Array
   phases: Float32Array
   freqs: Float32Array
   amps: Float32Array
@@ -71,15 +101,17 @@ interface GraphData {
 
 function buildGraph(count: number): GraphData {
   const clusters = [
-    [-2.3, 0.7, 0.2],
-    [2.1, -0.5, -0.7],
-    [0.1, 1.7, 0.5],
-    [0.5, -1.9, 0.3],
+    [-2.6, 0.8, 0.2],
+    [2.4, -0.5, -0.8],
+    [0.1, 1.9, 0.6],
+    [0.5, -2.0, 0.3],
+    [-1.4, -1.2, -0.5],
   ]
   const basePositions = new Float32Array(count * 3)
   const positions = new Float32Array(count * 3)
   const sizes = new Float32Array(count)
   const colors = new Float32Array(count * 3)
+  const activations = new Float32Array(count)
   const phases = new Float32Array(count)
   const freqs = new Float32Array(count)
   const amps = new Float32Array(count)
@@ -87,9 +119,9 @@ function buildGraph(count: number): GraphData {
 
   for (let i = 0; i < count; i++) {
     const c = clusters[i % clusters.length]
-    const x = c[0] + (Math.random() - 0.5) * 2.6
-    const y = c[1] + (Math.random() - 0.5) * 2.3
-    const z = c[2] + (Math.random() - 0.5) * 1.8
+    const x = c[0] + (Math.random() - 0.5) * 3.0
+    const y = c[1] + (Math.random() - 0.5) * 2.6
+    const z = c[2] + (Math.random() - 0.5) * 2.0
     basePositions[i * 3] = x
     basePositions[i * 3 + 1] = y
     basePositions[i * 3 + 2] = z
@@ -101,20 +133,20 @@ function buildGraph(count: number): GraphData {
     colors[i * 3] = col.r
     colors[i * 3 + 1] = col.g
     colors[i * 3 + 2] = col.b
-    sizes[i] = 0.6 + Math.random() * 1.0
+    sizes[i] = 0.7 + Math.random() * 1.1
     phases[i] = Math.random() * Math.PI * 2
     freqs[i] = 0.35 + Math.random() * 0.4
     amps[i] = 0.12 + Math.random() * 0.16
   }
 
-  // connect each node to its 2–3 nearest neighbours
+  // connect each node to its 2–3 nearest neighbours (a dense-ish neural web)
   const edgeList: number[] = []
   const seen = new Set<string>()
   for (let i = 0; i < count; i++) {
     const d: [number, number][] = []
     for (let j = 0; j < count; j++) if (j !== i) d.push([j, pts[i].distanceToSquared(pts[j])])
     d.sort((a, b) => a[1] - b[1])
-    const k = 2 + (Math.random() < 0.35 ? 1 : 0)
+    const k = 2 + (Math.random() < 0.5 ? 1 : 0)
     for (let n = 0; n < Math.min(k, d.length); n++) {
       const j = d[n][0]
       const key = i < j ? `${i}-${j}` : `${j}-${i}`
@@ -139,18 +171,32 @@ function buildGraph(count: number): GraphData {
     edgePositions[o + 5] = basePositions[b + 2]
   }
 
-  // signal packets — half travel each direction (the two-currents duality)
+  // signal packets travelling both directions (data flow / the two currents)
   const signals = Array.from({ length: GRAPH.signals }, (_, i) => {
     const e = Math.floor(Math.random() * edgeCount)
     return {
       a: edges[e * 2],
       b: edges[e * 2 + 1],
       t: Math.random(),
-      speed: (0.18 + Math.random() * 0.22) * (i % 2 === 0 ? 1 : -1),
+      speed: (0.2 + Math.random() * 0.25) * (i % 2 === 0 ? 1 : -1),
     }
   })
 
-  return { count, basePositions, positions, sizes, colors, phases, freqs, amps, edges, edgeCount, edgePositions, signals }
+  return {
+    count,
+    basePositions,
+    positions,
+    sizes,
+    colors,
+    activations,
+    phases,
+    freqs,
+    amps,
+    edges,
+    edgeCount,
+    edgePositions,
+    signals,
+  }
 }
 
 function GraphBody() {
@@ -159,11 +205,15 @@ function GraphBody() {
   const edgesRef = useRef<THREE.LineSegments>(null)
   const signalsRef = useRef<THREE.Points>(null)
   const signalPositions = useMemo(() => new Float32Array(data.signals.length * 3), [data])
-  const uniforms = useMemo(() => ({ uNear: { value: 8 }, uFar: { value: 22 } }), [])
+  const uniforms = useMemo(
+    () => ({ uNear: { value: 8 }, uFar: { value: 22 }, uTime: { value: 0 } }),
+    [],
+  )
+  const circle = useMemo(() => getCircleTexture(), [])
 
   const groupRef = useRef<THREE.Group>(null)
-  const ndc = useRef(new THREE.Vector2(-10, -10)) // cursor NDC; starts far off (no wake at rest)
-  const activity = useRef(0) // ramps to 1 on move, decays when still
+  const ndc = useRef(new THREE.Vector2(-10, -10))
+  const activity = useRef(0)
   const tmp = useMemo(
     () => ({ v: new THREE.Vector3(), dir: new THREE.Vector3(), cur: new THREE.Vector3() }),
     [],
@@ -183,10 +233,10 @@ function GraphBody() {
 
   useFrame((state, delta) => {
     const t = state.clock.elapsedTime
-    const { positions, basePositions, phases, freqs, amps, count } = data
+    uniforms.uTime.value = t
+    const { positions, basePositions, phases, freqs, amps, count, activations } = data
 
-    // cursor wake — project the cursor onto the graph and shove nearby nodes
-    // aside; the energy decays when the mouse stops, so the water settles.
+    // cursor wake — shove nearby neurons aside; settles when the mouse stops
     activity.current *= Math.exp(-delta * GRAPH.wake.decay)
     const wake = activity.current
     const grp = groupRef.current
@@ -227,9 +277,13 @@ function GraphBody() {
       positions[o] = px
       positions[o + 1] = py
       positions[o + 2] = pz
+      // neural activation decays each frame
+      activations[i] *= Math.exp(-delta * 3)
     }
     if (nodesRef.current) {
-      ;(nodesRef.current.geometry.getAttribute('position') as THREE.BufferAttribute).needsUpdate = true
+      const g = nodesRef.current.geometry
+      ;(g.getAttribute('position') as THREE.BufferAttribute).needsUpdate = true
+      ;(g.getAttribute('aActivation') as THREE.BufferAttribute).needsUpdate = true
     }
 
     const ep = data.edgePositions
@@ -245,13 +299,17 @@ function GraphBody() {
       ep[o + 5] = positions[b + 2]
     }
     if (edgesRef.current) {
-      ;(edgesRef.current.geometry.getAttribute('position') as THREE.BufferAttribute).needsUpdate = true
+      ;(edgesRef.current.geometry.getAttribute('position') as THREE.BufferAttribute).needsUpdate =
+        true
     }
 
     for (let i = 0; i < data.signals.length; i++) {
       const s = data.signals[i]
       s.t += s.speed * delta
       if (s.t > 1 || s.t < 0) {
+        // signal arrived — fire the destination neuron, then hop to a new edge
+        const arrived = s.t > 1 ? s.b : s.a
+        activations[arrived] = 1
         const e = Math.floor(Math.random() * data.edgeCount)
         s.a = data.edges[e * 2]
         s.b = data.edges[e * 2 + 1]
@@ -265,7 +323,8 @@ function GraphBody() {
       signalPositions[o + 2] = positions[a + 2] + (positions[b + 2] - positions[a + 2]) * s.t
     }
     if (signalsRef.current) {
-      ;(signalsRef.current.geometry.getAttribute('position') as THREE.BufferAttribute).needsUpdate = true
+      ;(signalsRef.current.geometry.getAttribute('position') as THREE.BufferAttribute).needsUpdate =
+        true
     }
   })
 
@@ -278,7 +337,7 @@ function GraphBody() {
         <lineBasicMaterial
           color="#38F2E5"
           transparent
-          opacity={0.18}
+          opacity={0.16}
           blending={THREE.AdditiveBlending}
           depthWrite={false}
           toneMapped={false}
@@ -290,6 +349,7 @@ function GraphBody() {
           <bufferAttribute attach="attributes-position" args={[data.positions, 3]} />
           <bufferAttribute attach="attributes-aSize" args={[data.sizes, 1]} />
           <bufferAttribute attach="attributes-aColor" args={[data.colors, 3]} />
+          <bufferAttribute attach="attributes-aActivation" args={[data.activations, 1]} />
         </bufferGeometry>
         <shaderMaterial
           uniforms={uniforms}
@@ -306,7 +366,8 @@ function GraphBody() {
           <bufferAttribute attach="attributes-position" args={[signalPositions, 3]} />
         </bufferGeometry>
         <pointsMaterial
-          size={0.18}
+          map={circle}
+          size={0.22}
           sizeAttenuation
           color="#e6f1ff"
           transparent
@@ -322,6 +383,7 @@ function GraphBody() {
 
 function Starfield() {
   const ref = useRef<THREE.Points>(null)
+  const circle = useMemo(() => getCircleTexture(), [])
   const positions = useMemo(() => {
     const n = 480
     const arr = new Float32Array(n * 3)
@@ -344,7 +406,8 @@ function Starfield() {
         <bufferAttribute attach="attributes-position" args={[positions, 3]} />
       </bufferGeometry>
       <pointsMaterial
-        size={0.09}
+        map={circle}
+        size={0.13}
         sizeAttenuation
         color="#cfe6ff"
         transparent
@@ -359,6 +422,7 @@ function Starfield() {
 function Bubbles() {
   const count = 24
   const ref = useRef<THREE.Points>(null)
+  const circle = useMemo(() => getCircleTexture(), [])
   const { positions, speeds } = useMemo(() => {
     const positions = new Float32Array(count * 3)
     const speeds = new Float32Array(count)
@@ -388,7 +452,8 @@ function Bubbles() {
         <bufferAttribute attach="attributes-position" args={[positions, 3]} />
       </bufferGeometry>
       <pointsMaterial
-        size={0.07}
+        map={circle}
+        size={0.1}
         sizeAttenuation
         color="#7ff2e5"
         transparent
@@ -401,13 +466,13 @@ function Bubbles() {
   )
 }
 
-/** The hero centerpiece: a knowledge graph drifting in deep water. */
+/** The hero centerpiece: a living neural network / knowledge graph in deep water. */
 export function KnowledgeGraph() {
   const tiltRef = useRef<THREE.Group>(null)
   const spinRef = useRef<THREE.Group>(null)
 
   useFrame((state, delta) => {
-    if (spinRef.current) spinRef.current.rotation.y += delta * 0.045
+    if (spinRef.current) spinRef.current.rotation.y += delta * 0.04
     const tilt = tiltRef.current
     if (tilt) {
       tilt.rotation.y = damp(tilt.rotation.y, state.pointer.x * 0.4, 2.5, delta)
