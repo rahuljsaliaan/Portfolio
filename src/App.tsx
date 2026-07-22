@@ -8,6 +8,7 @@ import { CustomCursor } from '@/components/cursor/CustomCursor'
 import { OceanBackground } from '@/components/decor/OceanBackground'
 import { Hero } from '@/components/sections/Hero'
 import { About } from '@/components/sections/About'
+import { Approach } from '@/components/sections/Approach'
 import { Skills } from '@/components/sections/Skills'
 import { Experience } from '@/components/sections/Experience'
 import { Projects } from '@/components/sections/Projects'
@@ -26,6 +27,7 @@ export default function App() {
         <main id="main-content" className="overflow-x-clip">
           <Hero />
           <About />
+          <Approach />
           <Skills />
           <Experience />
           <Projects />

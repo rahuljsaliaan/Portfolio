@@ -33,10 +33,10 @@ export const PARTICLES = {
   dprCap: 1.75,
 } as const
 
-/** Hero knowledge-graph tuning. */
+/** Hero neural-network / knowledge-graph tuning. */
 export const GRAPH = {
-  nodes: { desktop: 46, tablet: 36, mobile: 26 },
-  signals: 12,
+  nodes: { desktop: 58, tablet: 44, mobile: 30 },
+  signals: 16,
   dprCap: 1.75,
   // cursor wake: how far it reaches, how hard it shoves, how fast it settles
   wake: { radius: 2.4, strength: 0.7, decay: 2.6 },

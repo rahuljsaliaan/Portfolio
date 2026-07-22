@@ -11,7 +11,8 @@ never need to touch a component. TypeScript will tell you if a required field is
 | File | Exports | What it drives |
 |---|---|---|
 | `site.ts` | `site`, `nav`, `sectionMeta`, `sectionOrder`, `externalLinks` | Site name/role, nav labels, each section's eyebrow + title, shared external links |
-| `hero.ts` | `hero`, `heroCtas`, `about` | Hero eyebrow/name/subhead, the two CTAs, About paragraphs |
+| `hero.ts` | `hero`, `heroCtas`, `heroFocus`, `about` | Hero copy, CTAs, the "thinking about" ticker, About paragraphs |
+| `approach.ts` | `principles` | The "Approach" section — your build principles (icon + title + body) |
 | `skills.ts` | `skillCategories` | The Skills matrix cards (bars or tags) |
 | `experience.ts` | `experience` | Timeline entries (newest first) |
 | `projects.ts` | `projects`, `openSource` | Case-study cards + modal deep-dives, the GitHub strip |

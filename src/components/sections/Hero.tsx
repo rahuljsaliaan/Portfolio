@@ -1,8 +1,9 @@
 import { lazy, Suspense } from 'react'
 import { ArrowRight, Mail } from 'lucide-react'
-import { hero, heroCtas } from '@/data/hero'
+import { hero, heroCtas, heroFocus } from '@/data/hero'
 import { Button } from '@/components/ui/Button'
 import { GlowText } from '@/components/ui/GlowText'
+import { RotatingText } from '@/components/ui/RotatingText'
 import { Stagger, StaggerItem } from '@/components/ui/Reveal'
 import { SceneBoundary } from '@/components/three/SceneBoundary'
 import { useEnv } from '@/hooks/useEnv'
@@ -42,6 +43,12 @@ export function Hero() {
           <StaggerItem>
             <p className="mt-6 max-w-2xl text-lg leading-relaxed text-drift-gray sm:text-xl">
               {hero.subhead}
+            </p>
+          </StaggerItem>
+          <StaggerItem>
+            <p className="mt-5 font-mono text-sm text-drift-gray">
+              <span className="text-drift-gray/80">{heroFocus.label} </span>
+              <RotatingText items={heroFocus.areas} className="text-current-cyan text-glow-cyan" />
             </p>
           </StaggerItem>
           <StaggerItem>
