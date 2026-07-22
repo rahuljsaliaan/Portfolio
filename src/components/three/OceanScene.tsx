@@ -60,10 +60,10 @@ const fragmentShader = /* glsl */ `
     float depth = clamp(uScroll, 0.0, 1.0);
     float light = 1.0 - depth * 0.88; // how much sunlight still reaches this depth
 
-    vec3 abyssCol = vec3(0.003, 0.026, 0.038); // near-black deep ocean
-    vec3 midCol = vec3(0.008, 0.08, 0.095);    // dark teal-green
-    vec3 cyan = vec3(0.24, 0.95, 0.84);
-    vec3 surface = vec3(0.32, 0.92, 0.74);
+    vec3 abyssCol = vec3(0.004, 0.022, 0.045); // near-black deep blue
+    vec3 midCol = vec3(0.01, 0.058, 0.11);     // dark ocean blue (less green)
+    vec3 cyan = vec3(0.2, 0.78, 0.96);         // blue-leaning light
+    vec3 surface = vec3(0.28, 0.78, 0.96);
 
     vec3 col = mix(abyssCol, midCol, clamp(uv.y * 1.15, 0.0, 1.0));
     // caustics — clearly-moving light (this is what makes the water feel alive),
@@ -79,13 +79,15 @@ const fragmentShader = /* glsl */ `
       rays += smoothstep(0.09, 0.0, abs(uv.x - pos + (1.0 - uv.y) * 0.12));
     }
     col += cyan * rays * smoothstep(0.05, 1.0, uv.y) * 0.05 * light;
-    // surface sunlight, receding as you descend
-    col += surface * smoothstep(0.72, 1.12, uv.y) * 0.1 * light;
-    // small biolume halo around the cursor
-    col += cyan * exp(-md * 5.0) * (0.06 + uMouseVel * 0.12) * (0.6 + 0.4 * sin(uTime * 1.0));
+    // surface sunlight — a crisp band right at the top edge, not a broad haze
+    col += surface * smoothstep(0.9, 1.16, uv.y) * 0.09 * light;
+    // a faint magenta bloom right at the surface — a touch of the cosmos above the water
+    col += vec3(0.62, 0.12, 0.5) * smoothstep(0.88, 1.18, uv.y) * 0.06 * light;
     // sink into darkness as you scroll down — drowning into the deep
     col *= mix(1.0, 0.26, depth);
     col *= 1.0 - 0.42 * pow(distance(uv, vec2(0.5)) * 1.3, 2.0);   // deep vignette
+    // the cursor's soft "magic light" — a gentle shine that follows the mouse at any depth
+    col += cyan * exp(-md * 3.5) * (0.085 + uMouseVel * 0.04) * (0.7 + 0.3 * sin(uTime * 1.0));
 
     gl_FragColor = vec4(col, 1.0);
   }
