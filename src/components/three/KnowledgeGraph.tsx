@@ -12,14 +12,14 @@ const NODE_COLORS = [
   new THREE.Color('#5EF2C9'),
   new THREE.Color('#00BFA5'),
   new THREE.Color('#B388FF'),
-  new THREE.Color('#FF6BD6'),
+  new THREE.Color('#C23B9E'),
 ]
 function pickColor(r: number) {
   if (r < 0.58) return NODE_COLORS[0] // cyan (ocean core)
   if (r < 0.85) return NODE_COLORS[1] // seafoam
-  if (r < 0.97) return NODE_COLORS[2] // teal
-  if (r < 0.995) return NODE_COLORS[3] // violet (rare — jellyfish)
-  return NODE_COLORS[4] // nebula magenta (a single cosmic pop, barely ever)
+  if (r < 0.94) return NODE_COLORS[2] // teal
+  if (r < 0.975) return NODE_COLORS[3] // violet (rare — jellyfish)
+  return NODE_COLORS[4] // nebula magenta (a few cosmic pops)
 }
 function nodeCount() {
   const w = window.innerWidth

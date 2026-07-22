@@ -18,7 +18,7 @@
 
   /* Extended — liquid + celestial accents (core stays current-cyan) */
   --color-seafoam: #5ef2c9; /* aqua-green — living/organic accents */
-  --color-nebula: #ff6bd6; /* soft magenta — celestial highlights, sparse */
+  --color-nebula: #c23b9e; /* deep magenta — celestial highlights, sparse */
   --color-starlight: #cfe6ff; /* pale blue-white — stars, faint text glints */
   --color-abyss-deep: #080a12; /* deepest water — bottom of the depth gradient */
 
@@ -159,36 +159,6 @@
 
 @utility animate-cta-pulse {
   animation: cta-pulse 3.2s var(--ease-out-quart) infinite;
-}
-
-/* Slow drift for the caustic light layer (static noise, cheap GPU transform). */
-@keyframes caustic-drift {
-  0% {
-    transform: translate3d(-2%, -1%, 0) scale(1.12);
-  }
-  50% {
-    transform: translate3d(2%, 1%, 0) scale(1.18);
-  }
-  100% {
-    transform: translate3d(-2%, -1%, 0) scale(1.12);
-  }
-}
-@utility animate-caustic-drift {
-  animation: caustic-drift 26s ease-in-out infinite;
-}
-
-/* Gentle liquid-surface bob for the language "tanks". */
-@keyframes surface-bob {
-  0%,
-  100% {
-    transform: translateY(0) scaleY(1);
-  }
-  50% {
-    transform: translateY(-2px) scaleY(0.82);
-  }
-}
-@utility animate-surface-bob {
-  animation: surface-bob 2.6s ease-in-out infinite;
 }
 
 /* Fade the ocean canvas in over the gradient once WebGL is ready. */

@@ -16,10 +16,10 @@ src/
 ├── data/            # content + types (the single source of truth)
 ├── lib/             # constants (motion/particle/z tuning) + utils (cn, lerp, damp, scroll)
 ├── providers/       # EnvProvider (reduced-motion/touch/visibility) + MotionConfigProvider
-├── hooks/           # useEnv, useMagnetic, useParallax, useActiveSection, useCountUp, useSceneActive, useWakatime, useGithubRepos
+├── hooks/           # useEnv, useMagnetic, useActiveSection, useCountUp, useSceneActive, useWakatime, useGithubRepos
 ├── components/
 │   ├── layout/      # Navbar, ScrollProgress, Section, Footer, SkipLink
-│   ├── ui/          # Button, Card, Tag, GlowText, Reveal, Modal, SkillBar, RichText
+│   ├── ui/          # Button, Card, LiquidBlob, Tag, GlowText, Reveal, Modal, RotatingText, RichText, TechGlyph
 │   ├── icons/       # inline SVG brand marks + lookup map
 │   ├── cursor/      # CustomCursor
 │   ├── decor/       # OceanBackground (persistent WebGL ocean + gradient fallback)

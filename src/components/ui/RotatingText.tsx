@@ -64,19 +64,6 @@ export function RotatingText({
           className="relative inline-block"
         >
           {items[index]}
-          {/* caustic light shaft sweeping across as the word surfaces */}
-          <m.span
-            aria-hidden={true}
-            className="pointer-events-none absolute inset-y-0 -inset-x-3"
-            style={{
-              background:
-                'linear-gradient(105deg, transparent 38%, rgba(159,245,234,0.6) 50%, transparent 62%)',
-              mixBlendMode: 'screen',
-            }}
-            initial={{ x: '-130%', opacity: 0 }}
-            animate={{ x: '130%', opacity: [0, 1, 1, 0] }}
-            transition={{ duration: 1, ease: 'easeInOut', delay: 0.12 }}
-          />
         </m.span>
       </AnimatePresence>
     </span>
