@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { AnimatePresence, m } from 'framer-motion'
 import { Menu, X } from 'lucide-react'
 import type { NavItem } from '@/data/types'
@@ -36,10 +36,28 @@ function NavLink({ item, active, onSelect }: { item: NavItem; active: boolean; o
 export function Navbar() {
   const active = useActiveSection(sectionOrder)
   const [menuOpen, setMenuOpen] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
+
+  // Transparent over the hero (let the ocean show through), glass once you descend.
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 24)
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+
+  const solid = scrolled || menuOpen
 
   return (
     <header className="fixed inset-x-0 top-0" style={{ zIndex: Z.nav }}>
-      <div className="border-b border-current-cyan/10 bg-ocean-abyss/70 backdrop-blur-lg">
+      <div
+        className={cn(
+          'border-b transition-colors duration-500',
+          solid
+            ? 'border-current-cyan/10 bg-ocean-abyss/70 backdrop-blur-lg'
+            : 'border-transparent bg-transparent',
+        )}
+      >
         <nav className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
           <button
             type="button"

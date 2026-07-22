@@ -3,7 +3,6 @@
 
 /** framer-motion bezier easings (BezierDefinition tuples). */
 export const EASE_OUT_EXPO: [number, number, number, number] = [0.16, 1, 0.3, 1]
-export const EASE_OUT_QUART: [number, number, number, number] = [0.25, 1, 0.5, 1]
 /** Gentle buoyant settle — the site's "liquid" feel. */
 export const EASE_LIQUID: [number, number, number, number] = [0.34, 1.15, 0.5, 1]
 
@@ -38,8 +37,6 @@ export const GRAPH = {
   nodes: { desktop: 58, tablet: 44, mobile: 30 },
   signals: 10,
   dprCap: 1.75,
-  // cursor wake: how far it reaches, how hard it shoves, how fast it settles
-  wake: { radius: 1.8, strength: 0.5, decay: 2.6 },
 } as const
 
 /** z-index scale — one place so nothing fights. */
